@@ -1,0 +1,15 @@
+mat-grid-tile {
+    background: lightblue;
+    &:hover {
+        background:#007bff;
+    }
+    cursor: pointer;
+  }
+  
+.grid-container {
+    padding: 30px
+}  
+
+.isSelectedCell {
+    background: blue;
+}

@@ -7,9 +7,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BattlefieldComponent implements OnInit {
 
+  range = new Array(48);
+  selectedCell: number;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  selectCell(index){
+    this.selectedCell = index;
   }
 
 }
