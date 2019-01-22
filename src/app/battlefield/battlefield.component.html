@@ -2,12 +2,23 @@
   battlefield works!
 </p>
 <a routerLink="/">Go back</a>
-<section>
-<div class="grid-container" class="col-md-6">
-<mat-grid-list cols="12" rowHeight="1:1" >
-  <mat-grid-tile *ngFor="let num of range; let i = index" 
-  (click)="addToSelectedCellList(i)" [class.isSelectedCell]="checkIfCellIsSelectedByIndex(i)">{{num}}</mat-grid-tile>
-</mat-grid-list>
+<div class="container">
+  <div class="row">
+  <div class="grid-container" class="col-md-6">
+  <mat-grid-list cols="12" rowHeight="1:1" >
+    <mat-grid-tile *ngFor="let num of range; let i = index" 
+    (click)="addToSelectedCellList(i)" [class.isSelectedCell]="checkIfCellIsSelectedByIndex(i)">{{num}}</mat-grid-tile>
+  </mat-grid-list>
+  </div>
+  <div class="col-md-6"></div>
+  <div class="col-md-6">
+      <div class="row">
+    <div class="col-md-3">ITEM 1</div>
+    <div class="col-md-3">ITEM 2</div>
+    <div class="col-md-3">ITEM 3</div>
+    <div class="col-md-3">ITEM 4</div>
+  </div>
+  </div>
+  <div class="col-md-6"></div>
+  </div>
 </div>
-<div class="col-md-6"></div>
-</section>
