@@ -7,16 +7,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BattlefieldComponent implements OnInit {
 
-  range = new Array(48);
-  selectedCell: number;
+  cellNumber = 96;
+  range = Array.from(Array(this.cellNumber).keys());
+  selectedCellList = new Array(); 
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  selectCell(index){
-    this.selectedCell = index;
+  addToSelectedCellList(index: number){
+    this.selectedCellList.push({'index': index});
+  }
+
+  checkIfCellIsSelectedByIndex(index: number){
+    return this.selectedCellList.some(cell => cell.index === index);
   }
 
 }
