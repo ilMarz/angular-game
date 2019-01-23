@@ -65,7 +65,7 @@ export class BattlefieldComponent implements OnInit {
       console.log("item completato: "+this.item.type);
       this.addToItemListAndResetItemObject();
       this.disableAllItemButton=false;
-      this.selectedType = this.selectedType==6 ? 1 : this.selectedType+1;
+      this.setNewSelectedType();
       return;
     }
          
@@ -113,5 +113,12 @@ export class BattlefieldComponent implements OnInit {
                 type: null,
                 neighborList: []
                 };
+  }
+
+  setNewSelectedType(){
+    this.selectedType = this.selectedType == 6 ? 1 : this.selectedType+1;
+    if(this.selectedCellList.some(e => e.type==this.selectedType) && this.itemList.length<6){
+      this.setNewSelectedType();
+    }
   }
 }

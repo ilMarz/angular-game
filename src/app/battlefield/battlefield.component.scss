@@ -1,8 +1,5 @@
 mat-grid-tile {
     background: lightblue;
-    &:hover {
-        background:#007bff;
-    }
     cursor: pointer;
   }
   
@@ -19,20 +16,20 @@ mat-grid-tile {
 }
 
 .type1selected{
-    background-color: #17a2b8;
+    background-color: #495057;
 }
 .type2selected{
-    background-color: #1414ff;
+    background-color: #1ad845;
 }
 .type3selected{
-    background-color: #133c78;
+    background-color: #a30a0a;
 }
 .type4selected{
-    background-color: #092848;
+    background-color: #ce5f04;
 }
 .type5selected{
-    background-color: #10122a;
+    background-color: #ffc107;
 }
 .type6selected{
-    background-color: #040025;
+    background-color: #092848;
 }
