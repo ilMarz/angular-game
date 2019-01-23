@@ -5,7 +5,11 @@
 <div class="container">
     <label for="">Item selezionato</label> {{selectedType}}
   <div class="row">
-  <div class="grid-container" class="col-md-6">
+      <div class="col-md-1">
+          <label for="">inseriti:</label>
+          <div *ngFor="let inserted of itemList">{{inserted.type}}</div>
+      </div>
+  <div class="grid-container" class="col-md-5">    
   <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
     <mat-grid-tile *ngFor="let num of range; let i = index" 
     (click)="addToSelectedCellList(i)" 

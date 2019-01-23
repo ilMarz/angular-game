@@ -29,9 +29,9 @@ export class BattlefieldComponent implements OnInit {
   }
 
   addToSelectedCellList(index: number){
-    if(this.selectedType>=7){
+    if(this.itemList.length>=6){
       console.log("completo")
-      //return
+      return
     }
     this.disableAllItemButton=true;
     this.createItem(index);
@@ -65,7 +65,7 @@ export class BattlefieldComponent implements OnInit {
       console.log("item completato: "+this.item.type);
       this.addToItemListAndResetItemObject();
       this.disableAllItemButton=false;
-      this.selectedType++;
+      this.selectedType = this.selectedType==6 ? 1 : this.selectedType+1;
       return;
     }
          
