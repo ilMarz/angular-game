@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { BattlefieldComponent } from './battlefield/battlefield.component';
 import { HomeComponent } from './home/home.component';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import {MatGridListModule} from '@angular/material/grid-list';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MatGridListModule
+    MatGridListModule,
+    BrowserAnimationsModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

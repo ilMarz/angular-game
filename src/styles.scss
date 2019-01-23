@@ -1,5 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~bootstrap/dist/css/bootstrap.min.css';
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
 
 body {
     background: url(https://png.pngtree.com/element_our/md/20180327/md_8ab0c6a603414a8ae7842050fcacf485.jpg);
@@ -11,4 +13,8 @@ body {
 }
 .title-app h1 {
     color: white;
+}
+
+.space-between {
+    justify-content: space-between;
 }

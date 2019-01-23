@@ -11,13 +11,15 @@ export class BattlefieldComponent implements OnInit {
   colNumber = 11;
   cellNumber = this.colNumber*this.colNumber;
   range = Array.from(Array(this.cellNumber).keys());
-  selectedCellList = new Array(); 
   indexOffset = this.colNumber;
-  disableAll = false;
+  disableAllItemButton = false;
 
-  item = {type: null,
-          cell: []
+  item = {index: null,
+          type: null,
+          neighborList: []
         };
+  itemList = new Array();
+  selectedCellList = new Array();
 
   selectedType = 1;
 
@@ -27,8 +29,12 @@ export class BattlefieldComponent implements OnInit {
   }
 
   addToSelectedCellList(index: number){
-    this.disableAll=true;
-    this.createItem(index)
+    if(this.selectedType>=7){
+      console.log("completo")
+      //return
+    }
+    this.disableAllItemButton=true;
+    this.createItem(index);
   }
 
   checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
@@ -42,22 +48,23 @@ export class BattlefieldComponent implements OnInit {
 
   createItem(index: number){
     this.item.type = this.selectedType;
+    this.item.index = index;
 
     if(this.selectedCellList.some(c => c.index === index)){
-      //alert("già selezionato");
+      console.log("già selezionato: "+index);
       return;
     }
       
     if(this.checkIfIsAValidCellToSelect(index)){
-      var cell = this.generateMapFromIndex(index);
-      this.item.cell.push(cell);
-      this.selectedCellList.push({'index': index, 'type': this.selectedType});
+      var neighbor = this.getNeighborhoodFromIndex(index);
+      this.item.neighborList.push(neighbor);
+      this.selectedCellList.push({index: index, type: this.selectedType});
     }      
 
-    if(this.item.cell.length>=this.selectedType){
-      alert("item completato");
-      this.resetItem();
-      this.disableAll=false;
+    if(this.item.neighborList.length>=this.selectedType){
+      console.log("item completato: "+this.item.type);
+      this.addToItemListAndResetItemObject();
+      this.disableAllItemButton=false;
       this.selectedType++;
       return;
     }
@@ -68,41 +75,43 @@ export class BattlefieldComponent implements OnInit {
     this.selectedType = type;
   }
 
-  generateMapFromIndex(index: number){
-    var cell = {
+  getNeighborhoodFromIndex(index: number){
+    var neighbor = {
       up: {index: index-this.indexOffset, isFree: true},
       down: {index: index+this.indexOffset, isFree: true},
       left: {index: index-1, isFree: true},
       right: {index: index + 1, isFree: true}
      }
-     return cell;
+     return neighbor;
   }
 
   checkIfIsAValidCellToSelect(index: number){
-    if(this.item.cell.length==0){
+    if(this.item.neighborList.length==0){
       return true;
     }
-    var upCell = this.item.cell.find( c => c.up.index === index);
-    var downCell = this.item.cell.find( c => c.down.index === index);
-    var leftCell = this.item.cell.find( c => c.left.index === index);
-    var rightCell = this.item.cell.find( c => c.right.index === index);
+    var upCell = this.item.neighborList.find( c => c.up.index === index);
+    var downCell = this.item.neighborList.find( c => c.down.index === index);
+    var leftCell = this.item.neighborList.find( c => c.left.index === index);
+    var rightCell = this.item.neighborList.find( c => c.right.index === index);
 
     if (upCell!=undefined || downCell!=undefined || leftCell!=undefined || rightCell!=undefined) {
       return true;
       
     }
 
-    //alert("troppo lontanto!");
+    console.log("troppo lontanto!: "+index);
     return false;
   }
 
   isDisabled(type:number){
-    return this.disableAll || this.selectedCellList.some(e=>e.type==type);
+    return this.disableAllItemButton || this.itemList.some(e=>e.type==type);
   }
 
-  resetItem(){
-    this.item = {type: null,
-                cell: []
+  addToItemListAndResetItemObject(){
+    this.itemList.push(this.item);
+    this.item = {index: null,
+                type: null,
+                neighborList: []
                 };
   }
 }
