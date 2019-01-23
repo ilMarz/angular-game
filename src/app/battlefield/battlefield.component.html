@@ -33,6 +33,8 @@
             <button mat-raised-button color="primary" (click)="setType(6)" [disabled]="isDisabled(6)">6</button>
         </div>
       </div>
+      <span *ngIf="completed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
+      <span (click)="insertOnFirebase()"><button mat-raised-button color="primary">Confirm</button></span>
   </div>
   <div class="col-md-6"></div>
   </div>

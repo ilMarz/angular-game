@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+
+export interface Item { name: string; }
 
 @Component({
   selector: 'app-battlefield',
@@ -6,6 +10,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./battlefield.component.scss']
 })
 export class BattlefieldComponent implements OnInit {
+
+  private itemsCollection: AngularFirestoreCollection<Item>;
+  itemsObs: Observable<Item[]>;
 
   
   colNumber = 11;
@@ -23,14 +30,27 @@ export class BattlefieldComponent implements OnInit {
 
   selectedType = 1;
 
-  constructor() { }
+  completed = false;
+
+  constructor(afs: AngularFirestore) {
+    this.itemsCollection = afs.collection<Item>('match/1234/player_two');
+    this.itemsObs = this.itemsCollection.valueChanges();
+   }
 
   ngOnInit() {
   }
 
+  insertOnFirebase(){
+    this.itemsCollection.add({ name: "match1243"});
+
+  }
+
+  addItem(item: Item) {
+    this.itemsCollection.add(item);
+  }
+
   addToSelectedCellList(index: number){
-    if(this.itemList.length>=6){
-      console.log("completo")
+    if(this.itemList.length>=6){      
       return
     }
     this.disableAllItemButton=true;
@@ -113,6 +133,11 @@ export class BattlefieldComponent implements OnInit {
                 type: null,
                 neighborList: []
                 };
+    if(this.itemList.length==6){
+      console.log("completo")
+      this.completed = true;
+    }
+    
   }
 
   setNewSelectedType(){
@@ -123,9 +148,15 @@ export class BattlefieldComponent implements OnInit {
   }
 
   removeItem(type:number){
+    this.completed = false;
     console.log("remove")
     this.itemList = this.itemList.filter(e => e.type!=type);
     this.selectedCellList = this.selectedCellList.filter(e=>e.type!=type); 
     this.setNewSelectedType();
+  }
+
+  confirm(){
+    console.log("confirm");
+    console.log(this.selectedCellList)
   }
 }
