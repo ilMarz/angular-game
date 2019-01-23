@@ -7,7 +7,7 @@
   <div class="row">
       <div class="col-md-1">
           <label for="">inseriti:</label>
-          <div *ngFor="let inserted of itemList">{{inserted.type}}</div>
+          <div class="inserted-item" *ngFor="let inserted of itemList" (click)="removeItem(inserted.type)"> Type {{inserted.type}}</div>
       </div>
   <div class="grid-container" class="col-md-5">    
   <mat-grid-list cols={{colNumber}} rowHeight="1:1" >

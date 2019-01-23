@@ -121,4 +121,11 @@ export class BattlefieldComponent implements OnInit {
       this.setNewSelectedType();
     }
   }
+
+  removeItem(type:number){
+    console.log("remove")
+    this.itemList = this.itemList.filter(e => e.type!=type);
+    this.selectedCellList = this.selectedCellList.filter(e=>e.type!=type); 
+
+  }
 }
