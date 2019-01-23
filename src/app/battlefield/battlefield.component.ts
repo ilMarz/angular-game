@@ -116,8 +116,8 @@ export class BattlefieldComponent implements OnInit {
   }
 
   setNewSelectedType(){
-    this.selectedType = this.selectedType == 6 ? 1 : this.selectedType+1;
     if(this.selectedCellList.some(e => e.type==this.selectedType) && this.itemList.length<6){
+      this.selectedType = this.selectedType == 6 ? 1 : this.selectedType+1;
       this.setNewSelectedType();
     }
   }
