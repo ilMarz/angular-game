@@ -7,10 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BattlefieldComponent implements OnInit {
 
-  cellNumber = 154;
+  
+  colNumber = 11;
+  cellNumber = this.colNumber*this.colNumber;
   range = Array.from(Array(this.cellNumber).keys());
   selectedCellList = new Array(); 
-  indexOffset = 14;
+  indexOffset = this.colNumber;
   disableAll = false;
 
   item = {type: null,
@@ -56,6 +58,7 @@ export class BattlefieldComponent implements OnInit {
       alert("item completato");
       this.resetItem();
       this.disableAll=false;
+      this.selectedType++;
       return;
     }
          
@@ -91,6 +94,10 @@ export class BattlefieldComponent implements OnInit {
 
     //alert("troppo lontanto!");
     return false;
+  }
+
+  isDisabled(type:number){
+    return this.disableAll || this.selectedCellList.some(e=>e.type==type);
   }
 
   resetItem(){

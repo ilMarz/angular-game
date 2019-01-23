@@ -6,7 +6,7 @@
     <label for="">Item selezionato</label> {{selectedType}}
   <div class="row">
   <div class="grid-container" class="col-md-6">
-  <mat-grid-list cols="14" rowHeight="1:1" >
+  <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
     <mat-grid-tile *ngFor="let num of range; let i = index" 
     (click)="addToSelectedCellList(i)" 
     [class.type1selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,1)"
@@ -21,12 +21,12 @@
   <div class="col-md-6 item-selector">
       <div class="container">
         <div class="row">
-            <button mat-raised-button color="primary" (click)="setType(1)" [disabled]="disableAll">1</button>
-            <button mat-raised-button color="accent" (click)="setType(2)" [disabled]="disableAll">2</button>
-            <button mat-raised-button color="warn" (click)="setType(3)" [disabled]="disableAll">3</button>
-            <button mat-raised-button color="accent" (click)="setType(4)" [disabled]="disableAll">4</button>
-            <button mat-raised-button color="warn" (click)="setType(5)" [disabled]="disableAll">5</button>
-            <button mat-raised-button color="warn" (click)="setType(6)" [disabled]="disableAll">6</button>
+            <button mat-raised-button color="primary" (click)="setType(1)" [disabled]="isDisabled(1)">1</button>
+            <button mat-raised-button color="accent" (click)="setType(2)" [disabled]="isDisabled(2)">2</button>
+            <button mat-raised-button color="warn" (click)="setType(3)" [disabled]="isDisabled(3)">3</button>
+            <button mat-raised-button color="accent" (click)="setType(4)" [disabled]="isDisabled(4)">4</button>
+            <button mat-raised-button color="warn" (click)="setType(5)" [disabled]="isDisabled(5)">5</button>
+            <button mat-raised-button color="warn" (click)="setType(6)" [disabled]="isDisabled(6)">6</button>
         </div>
       </div>
   </div>
