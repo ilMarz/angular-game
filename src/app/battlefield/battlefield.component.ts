@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -19,12 +19,15 @@ export class BattlefieldComponent implements OnInit {
   private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
   cellCollectionObs: Observable<selectedCellListFirebaseInterface[]>;
 
+  @Input('matchId')
+  matchId: string = null;
   
   colNumber = 11;
   cellNumber = this.colNumber*this.colNumber;
   range = Array.from(Array(this.cellNumber).keys());
   indexOffset = this.colNumber;
   disableAllItemButton = false;
+  isConfirmed=false;
 
   item = {index: null,
           type: null,
@@ -38,8 +41,6 @@ export class BattlefieldComponent implements OnInit {
                                                                     cellList: []
                                                                   }
                                                                 };
-
-  matchId = null;
 
   selectedType = 1;
 
@@ -58,7 +59,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   addToSelectedCellList(index: number){
-    if(this.itemList.length>=6){      
+    if(this.isConfirmed || this.itemList.length>=6){      
       return
     }
     this.disableAllItemButton=true;
@@ -174,25 +175,27 @@ export class BattlefieldComponent implements OnInit {
 
   insertOnFirebase(){
     var resFromFB = this.cellCollection.add(this.selectedCellListFirebase);
-    resFromFB.then(data => {
+    resFromFB.then((data) => {
       console.log("result: ",data);
+      this.isConfirmed=true;
     }).catch(error=>{
       console.log("error on insert on fb: ", error)
     })
   }
 
   readFromFirebase(){
-    let collection = 'match/' + this.matchId + '/player'
-   /* this.afs.firestore.doc('match/M0Uqy7EzwaD7aO1u9lZ1').get()
-      .then(docSnapshot => {
-        if (docSnapshot.exists) {
-          console.log("exist!", docSnapshot)
+    let collection = 'match/' + this.matchId + '/player';
+      this.cellCollection.doc("M0Uqy7EzwaD7aO1u9lZ1").ref.get().then((doc) => {
+        if (doc.exists) {
+            this.selectedCellList = doc.data().player.cellList;
+            this.isConfirmed = true;
+        } else {
+            console.log("No such document!");
         }
-      })
-      .catch(error=>{
-        console.log("not exist")
-      });*/
-      let data = this.afs.firestore.collection(collection);
-      console.log("data",data)
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+
+
   }
 }

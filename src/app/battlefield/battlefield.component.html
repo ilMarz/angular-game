@@ -4,7 +4,7 @@
 <a routerLink="/">Go back</a>
 <div class="container">
     <label for="">Item selezionato</label> {{selectedType}}
-    <span>insert id<input type="text" ng-model="matchId"></span>
+    <span>insert id<input type="text" [(ngModel)]="matchId"></span>
     <button (click)="readFromFirebase()">click</button>
   <div class="row">
       <div class="col-md-1">
@@ -13,7 +13,7 @@
       </div>
   <div class="grid-container" class="col-md-5">    
   <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
-    <mat-grid-tile *ngFor="let num of range; let i = index" 
+    <mat-grid-tile  *ngFor="let num of range; let i = index" 
     (click)="addToSelectedCellList(i)" 
     [class.type1selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,1)"
     [class.type2selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,2)"
@@ -25,7 +25,7 @@
   </div>
   <div class="col-md-6"></div>
   <div class="col-md-6 item-selector">
-      <div class="container">
+      <div class="container" *ngIf="!isConfirmed">
         <div class="row space-between">
             <button mat-raised-button color="primary" (click)="setType(1)" [disabled]="isDisabled(1)">1</button>
             <button mat-raised-button color="primary" (click)="setType(2)" [disabled]="isDisabled(2)">2</button>
@@ -35,7 +35,7 @@
             <button mat-raised-button color="primary" (click)="setType(6)" [disabled]="isDisabled(6)">6</button>
         </div>
       </div>
-      <span *ngIf="completed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
+      <span *ngIf="completed && !isConfirmed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
   </div>
   <div class="col-md-6"></div>
   </div>
