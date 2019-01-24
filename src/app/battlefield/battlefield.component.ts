@@ -2,7 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
-export interface Item { name: string; }
+export interface selectedCellListFirebaseInterface { 
+                                                    player: {
+                                                      isPlayerOne: true,
+                                                      cellList: Object[] 
+                                                    }
+                                                  }
 
 @Component({
   selector: 'app-battlefield',
@@ -11,8 +16,8 @@ export interface Item { name: string; }
 })
 export class BattlefieldComponent implements OnInit {
 
-  private itemsCollection: AngularFirestoreCollection<Item>;
-  itemsObs: Observable<Item[]>;
+  private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
+  cellCollectionObs: Observable<selectedCellListFirebaseInterface[]>;
 
   
   colNumber = 11;
@@ -27,26 +32,29 @@ export class BattlefieldComponent implements OnInit {
         };
   itemList = new Array();
   selectedCellList = new Array();
+  selectedCellListFirebase: selectedCellListFirebaseInterface = { player: 
+                                                                  {
+                                                                    isPlayerOne: true, 
+                                                                    cellList: []
+                                                                  }
+                                                                };
+
+  matchId = null;
 
   selectedType = 1;
 
   completed = false;
 
+  afs: AngularFirestore;
+
   constructor(afs: AngularFirestore) {
-    this.itemsCollection = afs.collection<Item>('match/1234/player_two');
-    this.itemsObs = this.itemsCollection.valueChanges();
+    this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
+    this.cellCollectionObs = this.cellCollection.valueChanges();
+    this.afs = afs;
    }
 
   ngOnInit() {
-  }
-
-  insertOnFirebase(){
-    this.itemsCollection.add({ name: "match1243"});
-
-  }
-
-  addItem(item: Item) {
-    this.itemsCollection.add(item);
+    
   }
 
   addToSelectedCellList(index: number){
@@ -78,7 +86,8 @@ export class BattlefieldComponent implements OnInit {
     if(this.checkIfIsAValidCellToSelect(index)){
       var neighbor = this.getNeighborhoodFromIndex(index);
       this.item.neighborList.push(neighbor);
-      this.selectedCellList.push({index: index, type: this.selectedType});
+      this.selectedCellList.push({index: index, type: this.selectedType, hit: false});
+      this.selectedCellListFirebase.player.cellList.push({index: index, type: this.selectedType, hit: false});
     }      
 
     if(this.item.neighborList.length>=this.selectedType){
@@ -134,7 +143,7 @@ export class BattlefieldComponent implements OnInit {
                 neighborList: []
                 };
     if(this.itemList.length==6){
-      console.log("completo")
+      console.log("completo");
       this.completed = true;
     }
     
@@ -157,6 +166,33 @@ export class BattlefieldComponent implements OnInit {
 
   confirm(){
     console.log("confirm");
-    console.log(this.selectedCellList)
+    console.log(this.selectedCellList);
+    this.insertOnFirebase();
+  }
+
+  //FIREBASE
+
+  insertOnFirebase(){
+    var resFromFB = this.cellCollection.add(this.selectedCellListFirebase);
+    resFromFB.then(data => {
+      console.log("result: ",data);
+    }).catch(error=>{
+      console.log("error on insert on fb: ", error)
+    })
+  }
+
+  readFromFirebase(){
+    let collection = 'match/' + this.matchId + '/player'
+   /* this.afs.firestore.doc('match/M0Uqy7EzwaD7aO1u9lZ1').get()
+      .then(docSnapshot => {
+        if (docSnapshot.exists) {
+          console.log("exist!", docSnapshot)
+        }
+      })
+      .catch(error=>{
+        console.log("not exist")
+      });*/
+      let data = this.afs.firestore.collection(collection);
+      console.log("data",data)
   }
 }

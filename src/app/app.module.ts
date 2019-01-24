@@ -28,8 +28,8 @@ import { environment } from '../environments/environment';
     MatButtonModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
-    AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
-    AngularFireStorageModule // imports firebase/storage only needed for storage features
+    AngularFireAuthModule // imports firebase/auth, only needed for auth features
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

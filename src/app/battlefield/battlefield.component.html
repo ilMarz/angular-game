@@ -4,6 +4,8 @@
 <a routerLink="/">Go back</a>
 <div class="container">
     <label for="">Item selezionato</label> {{selectedType}}
+    <span>insert id<input type="text" ng-model="matchId"></span>
+    <button (click)="readFromFirebase()">click</button>
   <div class="row">
       <div class="col-md-1">
           <label for="">inseriti:</label>
@@ -34,7 +36,6 @@
         </div>
       </div>
       <span *ngIf="completed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
-      <span (click)="insertOnFirebase()"><button mat-raised-button color="primary">Confirm</button></span>
   </div>
   <div class="col-md-6"></div>
   </div>
