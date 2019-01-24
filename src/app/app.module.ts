@@ -27,7 +27,7 @@ import { FormsModule } from '@angular/forms';
     MatGridListModule,
     BrowserAnimationsModule,
     MatButtonModule,
-    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireModule,
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
     FormsModule
