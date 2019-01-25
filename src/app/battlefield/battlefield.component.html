@@ -1,11 +1,11 @@
 <div class="container">
-<div *ngIf="!isExistingMatch">
+<div *ngIf="!isExistingMatch || !matchReady">
     <span>Find match<input type="text" [(ngModel)]="matchId"></span>
     <button [disabled]="matchId==null" (click)="searchMatch()">click</button>
     <span>{{errorMessage}}</span>
 </div>
-<div *ngIf="isExistingMatch">
-Partita in corso! {{matchId}}
+<div *ngIf="isExistingMatch || matchReady">
+{{matchState}} {{matchId}}
 </div>
 
 <label for="">Selected Item</label> {{selectedType}}

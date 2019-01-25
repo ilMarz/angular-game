@@ -27,6 +27,8 @@ export class BattlefieldComponent implements OnInit {
   isConfirmed=false;
   isExistingMatch = false;
   errorMessage=null;
+  matchReady = false;
+  matchState=null;
 
   item = {index: null,
           type: null,
@@ -169,18 +171,34 @@ export class BattlefieldComponent implements OnInit {
   //FIREBASE
 
   insertOnFirebase(){
-    /*var resFromFB = this.cellCollection.add(this.selectedCellListFirebase);
-    resFromFB.then((data) => {
-      console.log("result: ",data);
-      this.isConfirmed=true;
-    }).catch(error=>{
-      console.log("error on insert on fb: ", error)
-    })*/
+    var player = "player1";
+    var docId = new Date().getTime().toString();
 
-    this.cellCollection.doc("TKyWnu8oWXltvCRpT3AX").ref.collection("player1").add(this.selectedCellListFirebase)
+    if(this.isExistingMatch){
+      player = "player2";
+      docId = this.matchId;
+      var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "ready"});
+      console.log(resset);
+    }
+    else {
+      var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "init"});
+      console.log(resset);
+    }
+    
+    this.cellCollection.doc(docId).collection(player).add(this.selectedCellListFirebase)
     .then((data) => {
       console.log("result: ",data);
       this.isConfirmed=true;
+      if(player=="player2"){
+        this.matchReady = true;
+        this.matchState = "FIGHT!"
+      } else {
+        var vc = this.cellCollection.doc(docId).collection("player2").valueChanges();
+        vc.subscribe((q=>{
+          console.log("changed", q)
+        }))
+        
+      }
     })
     .catch((error) => {
       console.log("error on insert on fb: ", error)
@@ -194,6 +212,17 @@ export class BattlefieldComponent implements OnInit {
             //this.isConfirmed = true;
             this.isExistingMatch = true;
             this.errorMessage=null;
+            this.matchState="Match loading...";
+            this.selectedCellList = [];
+            this.isConfirmed=false;
+            this.disableAllItemButton = false;
+            this.item = {index: null,
+              type: null,
+              neighborList: []
+            };
+            this.itemList = new Array();
+            this.cellCollection.doc(this.matchId).set({date: new Date(), status: "complete"});
+            
         } else {
             console.log("No such document!");
             this.errorMessage="Match not found!";
