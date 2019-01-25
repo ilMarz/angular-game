@@ -1,11 +1,15 @@
-<p>
-  battlefield works!
-</p>
-<a routerLink="/">Go back</a>
 <div class="container">
-    <label for="">Item selezionato</label> {{selectedType}}
-    <span>insert id<input type="text" [(ngModel)]="matchId"></span>
-    <button (click)="readFromFirebase()">click</button>
+<div *ngIf="!isExistingMatch">
+    <span>Find match<input type="text" [(ngModel)]="matchId"></span>
+    <button [disabled]="matchId==null" (click)="searchMatch()">click</button>
+    <span>{{errorMessage}}</span>
+</div>
+<div *ngIf="isExistingMatch">
+Partita in corso! {{matchId}}
+</div>
+
+<label for="">Selected Item</label> {{selectedType}}
+    
   <div class="row">
       <div class="col-md-1">
           <label for="">inseriti:</label>

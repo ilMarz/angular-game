@@ -3,10 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 
 export interface selectedCellListFirebaseInterface { 
-                                                    player: {
-                                                      isPlayerOne: true,
-                                                      cellList: Object[] 
-                                                    }
+                                                      cellList: Object[]
                                                   }
 
 @Component({
@@ -28,6 +25,8 @@ export class BattlefieldComponent implements OnInit {
   indexOffset = this.colNumber;
   disableAllItemButton = false;
   isConfirmed=false;
+  isExistingMatch = false;
+  errorMessage=null;
 
   item = {index: null,
           type: null,
@@ -35,11 +34,7 @@ export class BattlefieldComponent implements OnInit {
         };
   itemList = new Array();
   selectedCellList = new Array();
-  selectedCellListFirebase: selectedCellListFirebaseInterface = { player: 
-                                                                  {
-                                                                    isPlayerOne: true, 
-                                                                    cellList: []
-                                                                  }
+  selectedCellListFirebase: selectedCellListFirebaseInterface = { cellList: []
                                                                 };
 
   selectedType = 1;
@@ -88,7 +83,7 @@ export class BattlefieldComponent implements OnInit {
       var neighbor = this.getNeighborhoodFromIndex(index);
       this.item.neighborList.push(neighbor);
       this.selectedCellList.push({index: index, type: this.selectedType, hit: false});
-      this.selectedCellListFirebase.player.cellList.push({index: index, type: this.selectedType, hit: false});
+      this.selectedCellListFirebase.cellList.push({index: index, type: this.selectedType, hit: false});
     }      
 
     if(this.item.neighborList.length>=this.selectedType){
@@ -174,26 +169,38 @@ export class BattlefieldComponent implements OnInit {
   //FIREBASE
 
   insertOnFirebase(){
-    var resFromFB = this.cellCollection.add(this.selectedCellListFirebase);
+    /*var resFromFB = this.cellCollection.add(this.selectedCellListFirebase);
     resFromFB.then((data) => {
       console.log("result: ",data);
       this.isConfirmed=true;
     }).catch(error=>{
       console.log("error on insert on fb: ", error)
+    })*/
+
+    this.cellCollection.doc("TKyWnu8oWXltvCRpT3AX").ref.collection("player1").add(this.selectedCellListFirebase)
+    .then((data) => {
+      console.log("result: ",data);
+      this.isConfirmed=true;
+    })
+    .catch((error) => {
+      console.log("error on insert on fb: ", error)
     })
   }
 
-  readFromFirebase(){
-    let collection = 'match/' + this.matchId + '/player';
-      this.cellCollection.doc("M0Uqy7EzwaD7aO1u9lZ1").ref.get().then((doc) => {
+  searchMatch(){
+      this.cellCollection.doc(this.matchId).ref.get().then((doc) => {
         if (doc.exists) {
-            this.selectedCellList = doc.data().player.cellList;
-            this.isConfirmed = true;
+            //this.selectedCellList = doc.data().player.cellList;
+            //this.isConfirmed = true;
+            this.isExistingMatch = true;
+            this.errorMessage=null;
         } else {
             console.log("No such document!");
+            this.errorMessage="Match not found!";
         }
       }).catch(function(error) {
           console.log("Error getting document:", error);
+          this.errorMessage="Connection error!";
       });
 
 
