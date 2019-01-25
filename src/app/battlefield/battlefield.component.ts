@@ -29,6 +29,8 @@ export class BattlefieldComponent implements OnInit {
   errorMessage=null;
   matchReady = false;
   matchState=null;
+  listener = null;
+  oppositeCellList = [];
 
   item = {index: null,
           type: null,
@@ -168,6 +170,22 @@ export class BattlefieldComponent implements OnInit {
     this.insertOnFirebase();
   }
 
+  launchAttack(index: number){
+    var attackedCell = this.oppositeCellList.find(e=>e.index==index);
+    if(attackedCell!=undefined){
+      console.log("colpito")
+      attackedCell.hit=true;
+    }
+    else {
+      console.log("vuoto")
+    }
+  }
+
+  checkIfCellIsHit(index: number, type: number){
+    var cellByIndex = this.oppositeCellList.find(cell => cell.index === index && cell.hit === true);
+    return cellByIndex!=undefined ? cellByIndex.type==type : false;
+  }
+
   //FIREBASE
 
   insertOnFirebase(){
@@ -176,11 +194,13 @@ export class BattlefieldComponent implements OnInit {
 
     if(this.isExistingMatch){
       player = "player2";
+      this.listener = this.cellCollection.doc(docId).collection("player1").valueChanges();
       docId = this.matchId;
       var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "ready"});
       console.log(resset);
     }
     else {
+      this.listener = this.cellCollection.doc(docId).collection("player2").valueChanges();
       var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "init"});
       console.log(resset);
     }
@@ -192,13 +212,17 @@ export class BattlefieldComponent implements OnInit {
       if(player=="player2"){
         this.matchReady = true;
         this.matchState = "FIGHT!"
-      } else {
-        var vc = this.cellCollection.doc(docId).collection("player2").valueChanges();
-        vc.subscribe((q=>{
-          console.log("changed", q)
-        }))
-        
       }
+      this.listener.subscribe((q)=>{
+        console.log("changed", q);
+        if(q.length>0){
+          this.matchReady = true;
+          this.matchState = "FIGHT!";
+          this.isExistingMatch = true;
+          this.matchId = docId;
+          this.oppositeCellList = q[0].cellList;
+        }
+      })
     })
     .catch((error) => {
       console.log("error on insert on fb: ", error)
@@ -232,6 +256,7 @@ export class BattlefieldComponent implements OnInit {
           this.errorMessage="Connection error!";
       });
 
-
   }
+
+  
 }

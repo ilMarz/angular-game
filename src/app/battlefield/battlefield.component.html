@@ -27,9 +27,21 @@
     [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"></mat-grid-tile>
   </mat-grid-list>
   </div>
-  <div class="col-md-6"></div>
+  <div class="col-md-6">
+    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
+        <mat-grid-tile  *ngFor="let num of range; let i = index" 
+        (click)="launchAttack(i)"
+        [class.type1selected]="checkIfCellIsHit(i,1)"
+        [class.type2selected]="checkIfCellIsHit(i,2)"
+        [class.type3selected]="checkIfCellIsHit(i,3)"
+        [class.type4selected]="checkIfCellIsHit(i,4)"
+        [class.type5selected]="checkIfCellIsHit(i,5)"
+        [class.type6selected]="checkIfCellIsHit(i,6)"
+        ></mat-grid-tile>
+    </mat-grid-list>
+  </div>
   <div class="col-md-6 item-selector">
-      <div class="container" *ngIf="!isConfirmed">
+      <div class="container">
         <div class="row space-between">
             <button mat-raised-button color="primary" (click)="setType(1)" [disabled]="isDisabled(1)">1</button>
             <button mat-raised-button color="primary" (click)="setType(2)" [disabled]="isDisabled(2)">2</button>
