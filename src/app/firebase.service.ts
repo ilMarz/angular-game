@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentData } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 export interface selectedCellListFirebaseInterface { 
   cellList: Object[]
@@ -13,55 +14,55 @@ export class FirebaseService {
 
   constructor(afs: AngularFirestore) {
     this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
+    this.setDocId(new Date().getTime().toString());
    }
 
   private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
   private docId: string;
-
-
+  private player: string = "player1";
 
 
   //public methods
-  insertPlayerOneCellList(selectedCellListFirebase: selectedCellListFirebaseInterface){
-    var player = "player1";
-    this.docId = new Date().getTime().toString();
+  insertPlayerOneCellListAndReturnPromise(selectedCellListFirebase: selectedCellListFirebaseInterface){
       
-    var listener = this.getListenerObjectByIdAndCollection(docId,"player2");
-    this.cellCollection.doc(docId).set({date: new Date(), status: "init"});
-    
-    this.cellCollection.doc(docId).collection(player).add(selectedCellListFirebase)
-    .then((data) => {
-      console.log("result: ",data);
-      this.isConfirmed=true;
-      if(player=="player2"){
-        this.matchReady = true;
-        this.matchState = "FIGHT!"
+    //var listener = this.getListenerObjectOnCollection("player2");    
+    this.setMatchState("init");
+    return this.cellCollection.doc(this.docId).collection(this.player).add(selectedCellListFirebase);
+  }
+
+  insertPlayerTwoCellListAndReturnPromise(selectedCellListFirebase: selectedCellListFirebaseInterface){
+    this.player = "player2";
+    this.setMatchState("loading");
+    return this.insertPlayerOneCellListAndReturnPromise(selectedCellListFirebase);
+  }
+
+
+  setDocId(docId: string){
+    this.docId = docId;
+  }
+
+  getListenerObjectOnCollection(collectionName: string){
+    if(this.docId==null){
+      return null
+    }
+    return this.cellCollection.doc(this.docId).collection(collectionName).valueChanges();
+  }
+
+  //private methods  
+
+  private setMatchState(state: string){
+    if(this.docId==null){
+      return null
+    }
+    this.cellCollection.doc(this.docId).set({date: new Date(), status: "init"});
+  }
+
+ /* subscribeToListener(listener: Observable<DocumentData[]>){
+    listener.subscribe((q)=>{
+
+      if(q.length>0){
+        //this.oppositeCellList = q[0].cellList;
       }
-      this.listener.subscribe((q)=>{
-        console.log("changed", q);
-        if(q.length>0){
-          this.matchReady = true;
-          this.matchState = "FIGHT!";
-          this.isExistingMatch = true;
-          this.matchId = docId;
-          this.oppositeCellList = q[0].cellList;
-        }
-      })
     })
-    .catch((error) => {
-      console.log("error on insert on fb: ", error)
-    })
-  }
-
-
-
-  //private methods
-
-  getListenerObjectByIdAndCollection(id: string, collectionName: string){
-    return this.cellCollection.doc(id).collection(collectionName).valueChanges();
-  }
-
-  setMatchState(state: string){
-    this.cellCollection.doc(docId).set({date: new Date(), status: "init"});
-  }
+  }*/
 }
