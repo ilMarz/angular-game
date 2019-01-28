@@ -23,17 +23,17 @@ export class FirebaseService {
 
 
   //public methods
-  insertPlayerOneCellListAndReturnPromise(selectedCellListFirebase: selectedCellListFirebaseInterface){
+  insertPlayerOneCellListAndReturnPromise(username: string, selectedCellListFirebase: selectedCellListFirebaseInterface){
       
     //var listener = this.getListenerObjectOnCollection("player2");    
     this.setMatchState("init");
-    return this.cellCollection.doc(this.docId).collection(this.player).add(selectedCellListFirebase);
+    return this.cellCollection.doc(this.docId).collection(this.player).doc(username).set(selectedCellListFirebase);
   }
 
-  insertPlayerTwoCellListAndReturnPromise(selectedCellListFirebase: selectedCellListFirebaseInterface){
+  insertPlayerTwoCellListAndReturnPromise(username: string, selectedCellListFirebase: selectedCellListFirebaseInterface){
     this.player = "player2";
     this.setMatchState("loading");
-    return this.insertPlayerOneCellListAndReturnPromise(selectedCellListFirebase);
+    return this.insertPlayerOneCellListAndReturnPromise(username, selectedCellListFirebase);
   }
 
 

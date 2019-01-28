@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { UtilService, SelectedCellList, Item, Neighbor } from '../util.service';
+import { UtilService, SelectedCell, Item, Neighbor } from '../util.service';
 
 export interface selectedCellListFirebaseInterface { 
                                                       cellList: Object[]
@@ -21,6 +21,7 @@ export class BattlefieldComponent implements OnInit {
   matchId: string = null;
   
   range = this.utilService.getRange();
+  colNumber = this.utilService.getColNumber();
 
   disableAllItemButton = false;
   isConfirmed=false;
@@ -29,11 +30,11 @@ export class BattlefieldComponent implements OnInit {
   matchReady = false;
   matchState=null;
   listener = null;
-  oppositeCellList = [];
+  oppositeCellList: SelectedCell[] = new Array();
 
-  item: Item;
-  itemList: Item[];
-  selectedCellList: SelectedCellList[]; 
+  item: Item = {type: null, neighborList: new Array()};
+  itemList: Item[] = new Array();
+  selectedCellList: SelectedCell[] = new Array(); 
   selectedCellListFirebase: selectedCellListFirebaseInterface = { cellList: [] };
 
   selectedType = 1;
@@ -47,7 +48,7 @@ export class BattlefieldComponent implements OnInit {
 
   ngOnInit() {}
 
-  addToSelectedCellList(index: number){
+  clickedCellHandler(index: number){
     if(this.isConfirmed || this.itemList.length>=6){      
       return
     }
@@ -55,33 +56,34 @@ export class BattlefieldComponent implements OnInit {
     this.createItem(index);
   }
 
-  checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
-    return this.utilService.checkIfCellIsSelectedByIndexAndSetColourByType(this.selectedCellList,index,type);
-  }
-
   createItem(index: number){
     
-    if(this.isCellSelectedByIndex(index)){
+    if(this.isCellAlreadySelected(index)){
       console.log("già selezionato: "+index);
       return;
     }
 
+    if(this.utilService.isSelectedCellTooFarFromItem(index, this.item)){
+      console.log("too far!!");
+      return
+    } 
+    
+    var neighbor = this.utilService.getNeighborhoodFromIndex(index);
+    this.item.type = this.selectedType;
+    this.item.neighborList.push(neighbor);    
+    this.addCellToSelectedCellList({index: index, type: this.selectedType, hit: false}); 
+
     if(this.isItemComplete()){
       console.log("item completato: "+this.item.type);
       this.addToItemListAndResetItemObject();
-      this.disableAllItemButton=false;
       this.setNewSelectedType();
-      return;
+      this.disableAllItemButton=false;
     }
-      
-    if(this.utilService.checkIfIsAValidCellToSelect(this.item, index)){
-      var neighbor = this.utilService.getNeighborhoodFromIndex(index);
-      this.item = this.utilService.createItemObject(index,this.selectedType,neighbor);
-
-      this.selectedCellList.push({index: index, type: this.selectedType, hit: false});
-      this.selectedCellListFirebase.cellList.push({index: index, type: this.selectedType, hit: false});
-    }      
          
+  }
+
+  checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
+    return this.utilService.checkIfCellIsSelectedByIndexAndSetColourByType(this.selectedCellList,index,type);
   }
 
   setType(type: number){
@@ -92,41 +94,25 @@ export class BattlefieldComponent implements OnInit {
     return this.disableAllItemButton || this.itemList.some(e=>e.type==type);
   }
 
-  setNewSelectedType(){
-    if(this.selectedCellList.some(e => e.type==this.selectedType) && this.itemList.length<6){
-      this.selectedType = this.selectedType == 6 ? 1 : this.selectedType+1;
-      this.setNewSelectedType();
-    }
-  }
-
   removeItem(type:number){
     this.completed = false;
-    console.log("remove")
-    this.itemList = this.itemList.filter(e => e.type!=type);
-    this.selectedCellList = this.selectedCellList.filter(e=>e.type!=type); 
+    console.log("remove");
+    this.removeSelectedItemAndAllCellsByType(type);
     this.setNewSelectedType();
   }
 
   confirm(){
     console.log("confirm");
     console.log(this.selectedCellList);
-    this.insertOnFirebase();
+    this.insertCellListOnFirebase();
   }
 
   launchAttack(index: number){
-    var attackedCell = this.oppositeCellList.find(e=>e.index==index);
-    if(attackedCell!=undefined){
-      console.log("colpito")
-      attackedCell.hit=true;
-    }
-    else {
-      console.log("vuoto")
-    }
+    var isHit = this.utilService.isOppositeCellHit(index,this.oppositeCellList);
   }
 
   checkIfCellIsHit(index: number, type: number){
-    var cellByIndex = this.oppositeCellList.find(cell => cell.index === index && cell.hit === true);
-    return cellByIndex!=undefined ? cellByIndex.type==type : false;
+    return this.utilService.getHitCellType(index,type,this.oppositeCellList);
   }
 
   //private
@@ -134,7 +120,7 @@ export class BattlefieldComponent implements OnInit {
     return this.item.neighborList.length>=this.selectedType;
   }
 
-  private isCellSelectedByIndex(index: number){
+  private isCellAlreadySelected(index: number){
     return this.selectedCellList.some(c => c.index === index);
   }
 
@@ -150,78 +136,33 @@ export class BattlefieldComponent implements OnInit {
   }
 
   private resetItemObject(){
-    this.item = {index: null,
+    this.item = {
       type: null,
       neighborList: []
     }
   }
 
-  //FIREBASE
-
-  insertOnFirebase(){
-    var player = "player1";
-    var docId = new Date().getTime().toString();
-
-    if(this.isExistingMatch){
-      player = "player2";
-      this.listener = this.cellCollection.doc(docId).collection("player1").valueChanges();
-      docId = this.matchId;
-      var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "ready"});
-      console.log(resset);
+  private setNewSelectedType(){
+    if(this.selectedCellList.some(e => e.type==this.selectedType) && this.itemList.length<6){
+      this.selectedType = this.selectedType == 6 ? 1 : this.selectedType+1;
+      this.setNewSelectedType();
     }
-    else {
-      this.listener = this.cellCollection.doc(docId).collection("player2").valueChanges();
-      var resset = this.cellCollection.doc(docId).set({date: new Date(), status: "init"});
-      console.log(resset);
-    }
-    
-    this.cellCollection.doc(docId).collection(player).add(this.selectedCellListFirebase)
-    .then((data) => {
-      console.log("result: ",data);
-      this.isConfirmed=true;
-      if(player=="player2"){
-        this.matchReady = true;
-        this.matchState = "FIGHT!"
-      }
-      this.listener.subscribe((q)=>{
-        console.log("changed", q);
-        if(q.length>0){
-          this.matchReady = true;
-          this.matchState = "FIGHT!";
-          this.isExistingMatch = true;
-          this.matchId = docId;
-          this.oppositeCellList = q[0].cellList;
-        }
-      })
-    })
-    .catch((error) => {
-      console.log("error on insert on fb: ", error)
-    })
   }
 
-  searchMatch(){
-      this.cellCollection.doc(this.matchId).ref.get().then((doc) => {
-        if (doc.exists) {
-            //this.selectedCellList = doc.data().player.cellList;
-            //this.isConfirmed = true;
-            this.isExistingMatch = true;
-            this.errorMessage=null;
-            this.matchState="Match loading...";
-            this.selectedCellList = [];
-            this.isConfirmed=false;
-            this.disableAllItemButton = false;
-            this.resetItemObject();
-            this.itemList = new Array();
-            this.cellCollection.doc(this.matchId).set({date: new Date(), status: "complete"});
-            
-        } else {
-            console.log("No such document!");
-            this.errorMessage="Match not found!";
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
-          this.errorMessage="Connection error!";
-      });
+  private removeSelectedItemAndAllCellsByType(type: number){
+    this.itemList = this.itemList.filter(e => e.type!=type);
+    this.selectedCellList = this.selectedCellList.filter(e=>e.type!=type); 
+
+  }
+
+  private addCellToSelectedCellList(cell: SelectedCell){
+    this.selectedCellList.push(cell);
+    this.selectedCellListFirebase.cellList.push(cell);
+  }
+
+  //FIREBASE
+
+  insertCellListOnFirebase(){
 
   }
 

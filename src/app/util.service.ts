@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 
 
-export interface SelectedCellList { 
+export interface SelectedCell { 
   index: number, type: number, hit: boolean
 }
 
 export interface Item { 
-  index: number, type: number, neighborList: Neighbor[]
+  type: number, neighborList: Neighbor[]
 }
 
 export interface Neighbor { 
@@ -29,14 +29,14 @@ export class UtilService {
   private cellNumber = this.colNumber*this.colNumber;
   private range = Array.from(Array(this.cellNumber).keys());
 
-  checkIfCellIsSelectedByIndexAndSetColourByType(arrayToCheck: SelectedCellList[], index: number, type: number){
+  checkIfCellIsSelectedByIndexAndSetColourByType(arrayToCheck: SelectedCell[], index: number, type: number){
     var cellByIndex = this.getCellByIndex(arrayToCheck,index);
     return cellByIndex!=undefined ? cellByIndex.type==type : false;
   }
 
-  checkIfIsAValidCellToSelect(item: Item, index: number){
+  isSelectedCellTooFarFromItem(index: number, item: Item){
     if(item.neighborList.length==0){
-      return true;
+      return false;
     }
     var upCell = item.neighborList.find( c => c.up.index === index);
     var downCell = item.neighborList.find( c => c.down.index === index);
@@ -44,10 +44,10 @@ export class UtilService {
     var rightCell = item.neighborList.find( c => c.right.index === index);
 
     if (upCell!=undefined || downCell!=undefined || leftCell!=undefined || rightCell!=undefined) {
-      return true;      
+      return false;      
     }
     console.log("too far!: "+index);
-    return false;
+    return true;
   }
 
   getNeighborhoodFromIndex(index: number){
@@ -64,20 +64,25 @@ export class UtilService {
     return this.range;
   }
 
-  createItemObject(index:number,selectedType: number, neighbor: Neighbor){
-    var item:Item;
-    item.type = selectedType;
-    item.index = index;
-    item.neighborList.push(neighbor);
-    
-    return item;
+  getColNumber(){
+    return this.colNumber;
+  }
+
+  isOppositeCellHit(index: number, oppositeCellList: SelectedCell[]){
+    var attackedCell = oppositeCellList.find(e=>e.index==index);
+    return attackedCell!=undefined;
+  }
+
+  getHitCellType(index: number, type: number, oppositeCellList: SelectedCell[]){
+    var cellByIndex = oppositeCellList.find(cell => cell.index === index && cell.hit === true);
+    return cellByIndex!=undefined ? cellByIndex.type==type : false;
   }
 
 
 
   //private
   
-  private getCellByIndex(arrayToCheck: SelectedCellList[], index:number){
+  private getCellByIndex(arrayToCheck: SelectedCell[], index:number){
     return arrayToCheck.find(cell => cell.index === index);
   }
 }
