@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, DocumentData } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 export interface selectedCellListFirebaseInterface { 
@@ -47,6 +47,36 @@ export class FirebaseService {
     }
     return this.cellCollection.doc(this.docId).collection(collectionName).valueChanges();
   }
+
+  checkIfDocExist(docId: string, username: string) {
+    var docPath = docId+"/players/"+username;
+
+    return new Promise<Object>(resolve => {
+
+      this.cellCollection.doc(docPath).ref.get().then(data=>{
+        console.log("exist from service");
+        resolve(data)
+      })
+    });
+  } 
+
+  getAllMatchIDsByUser(username: string) {
+    
+    return new Promise<Object>(resolve => {
+
+      this.cellCollection.get().forEach(data=>{
+        data.forEach(match=>{
+          this.cellCollection.doc(match.id+"/players/"+username).ref.get().then(data=>{
+            //console.log("match exist");
+            if(data.exists){
+              resolve(match.id)
+            }
+          })
+        })
+        //resolve(data)
+      })
+    });
+  } 
 
   //private methods  
 

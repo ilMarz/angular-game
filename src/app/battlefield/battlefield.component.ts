@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UtilService, SelectedCell, Item, Neighbor } from '../util.service';
+import { FirebaseService } from '../firebase.service';
 
 export interface selectedCellListFirebaseInterface { 
                                                       cellList: Object[]
@@ -41,7 +42,7 @@ export class BattlefieldComponent implements OnInit {
 
   completed = false;
 
-  constructor(private afs: AngularFirestore, private utilService: UtilService) {
+  constructor(private afs: AngularFirestore, private utilService: UtilService, private firebaseService: FirebaseService) {
     this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
     this.cellCollectionObs = this.cellCollection.valueChanges();
    }
@@ -163,7 +164,15 @@ export class BattlefieldComponent implements OnInit {
   //FIREBASE
 
   insertCellListOnFirebase(){
+    var obj = {player: 1, username: "user", cellList: this.selectedCellList};
+    var docId = new Date().getTime().toString();
+    this.cellCollection.doc(docId+"/players/"+"username").set(obj);
+  }
 
+  async searchMatch(){
+    var res = await this.firebaseService.checkIfDocExist("1548787570824","username");
+    var r = await this.firebaseService.getAllMatchIDsByUser("username");
+    console.log("match from battlefield", r)
   }
 
   
