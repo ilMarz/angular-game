@@ -6,6 +6,10 @@ export interface selectedCellListFirebaseInterface {
   cellList: Object[]
 }
 
+export interface credentialListFirebaseInterface { 
+  credentialList: Object[]
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,12 +18,14 @@ export class FirebaseService {
 
   constructor(afs: AngularFirestore) {
     this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
+    this.credential = afs.collection<credentialListFirebaseInterface>('user');
     this.setDocId(new Date().getTime().toString());
    }
 
   private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
   private docId: string;
   private player: string = "player1";
+  private credential: AngularFirestoreCollection<credentialListFirebaseInterface>;
 
 
   //public methods
@@ -74,6 +80,17 @@ export class FirebaseService {
           })
         })
         //resolve(data)
+      })
+    });
+  } 
+
+  checkCredential(username: string, password: string) {
+
+    return new Promise<Object>(resolve => {
+
+      this.credential.ref.where("credentialList", "array-contains", {username: username, password: password}).get().then(data=>{
+        console.log("user exist");
+        resolve(!data.empty)
       })
     });
   } 
