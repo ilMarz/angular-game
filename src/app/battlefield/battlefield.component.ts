@@ -57,32 +57,6 @@ export class BattlefieldComponent implements OnInit {
     this.createItem(index);
   }
 
-  createItem(index: number){
-    
-    if(this.isCellAlreadySelected(index)){
-      console.log("già selezionato: "+index);
-      return;
-    }
-
-    if(this.utilService.isSelectedCellTooFarFromItem(index, this.item)){
-      console.log("too far!!");
-      return
-    } 
-    
-    var neighbor = this.utilService.getNeighborhoodFromIndex(index);
-    this.item.type = this.selectedType;
-    this.item.neighborList.push(neighbor);    
-    this.addCellToSelectedCellList({index: index, type: this.selectedType, hit: false}); 
-
-    if(this.isItemComplete()){
-      console.log("item completato: "+this.item.type);
-      this.addToItemListAndResetItemObject();
-      this.setNewSelectedType();
-      this.disableAllItemButton=false;
-    }
-         
-  }
-
   checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
     return this.utilService.checkIfCellIsSelectedByIndexAndSetColourByType(this.selectedCellList,index,type);
   }
@@ -159,6 +133,32 @@ export class BattlefieldComponent implements OnInit {
   private addCellToSelectedCellList(cell: SelectedCell){
     this.selectedCellList.push(cell);
     this.selectedCellListFirebase.cellList.push(cell);
+  }
+
+  private createItem(index: number){
+    
+    if(this.isCellAlreadySelected(index)){
+      console.log("già selezionato: "+index);
+      return;
+    }
+
+    if(this.utilService.isSelectedCellTooFarFromItem(index, this.item)){
+      console.log("too far!!");
+      return
+    } 
+    
+    var neighbor = this.utilService.getNeighborhoodFromIndex(index);
+    this.item.type = this.selectedType;
+    this.item.neighborList.push(neighbor);    
+    this.addCellToSelectedCellList({index: index, type: this.selectedType, hit: false}); 
+
+    if(this.isItemComplete()){
+      console.log("item completato: "+this.item.type);
+      this.addToItemListAndResetItemObject();
+      this.setNewSelectedType();
+      this.disableAllItemButton=false;
+    }
+         
   }
 
   //FIREBASE

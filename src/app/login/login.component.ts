@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FirebaseService } from '../firebase.service';
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -9,7 +10,7 @@ import { FirebaseService } from '../firebase.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private fireBaseService: FirebaseService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -20,9 +21,9 @@ export class LoginComponent implements OnInit {
   @Input('matchId')
   password: string = null;
 
-  async checkCredential(){
-    var exists = await this.fireBaseService.checkCredential(this.username,this.password);
-    console.log("Does user exist?", exists)
+  checkCredential(){
+    this.authService.login(this.username,this.password);
+    this.router.navigate(['/play']);
   }
 
 }

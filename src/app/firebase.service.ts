@@ -89,7 +89,7 @@ export class FirebaseService {
     return new Promise<Object>(resolve => {
 
       this.credential.ref.where("credentialList", "array-contains", {username: username, password: password}).get().then(data=>{
-        console.log("user exist");
+        console.log("data from fs service", data);
         resolve(!data.empty)
       })
     });
