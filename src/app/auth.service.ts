@@ -12,10 +12,28 @@ export class AuthService {
 
   async login(username: string, password: string){
     var userExists = await this.fs.checkCredential(username,password);
-    this.isUserLogged = userExists==true;
+    if(userExists){
+      var token = btoa(username + "::" + password);
+      this.isUserLogged = true;
+      localStorage.setItem("token", token);
+    }
+  }
+
+  checkToken(){
+    let token = atob(localStorage.getItem("token"));
+    if(token==undefined){
+      return;
+    }
+    let username = token.split("::")[0];
+    let password = token.split("::")[1];
+
+    this.fs.checkCredential(username,password).then(res => {
+      return res;
+    })
   }
 
   logout(){
     this.isUserLogged = false;
+    localStorage.removeItem("token");
   }
 }

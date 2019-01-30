@@ -21,8 +21,8 @@ export class LoginComponent implements OnInit {
   @Input('matchId')
   password: string = null;
 
-  checkCredential(){
-    this.authService.login(this.username,this.password);
+  async checkCredential(){
+    await this.authService.login(this.username,this.password);
     this.router.navigate(['/play']);
   }
 
