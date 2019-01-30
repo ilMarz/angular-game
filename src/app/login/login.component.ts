@@ -12,9 +12,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService, private router: Router) { }
 
-  ngOnInit() {
-    this.authService.checkToken();
-  }
+  ngOnInit() {}
 
   @Input('matchId')
   username: string = null;
@@ -22,9 +20,10 @@ export class LoginComponent implements OnInit {
   @Input('matchId')
   password: string = null;
 
-  async checkCredential(){
-    await this.authService.login(this.username,this.password);
-    this.router.navigate(['/play']);
+  checkCredential(){
+    this.authService.login(this.username,this.password).then(()=>{
+      this.router.navigate(['/play']);
+    })
   }
 
 }
