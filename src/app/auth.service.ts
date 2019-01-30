@@ -20,15 +20,17 @@ export class AuthService {
   }
 
   checkToken(){
-    let token = atob(localStorage.getItem("token"));
-    if(token==undefined){
+    if(localStorage.getItem("token")==null){
       return;
     }
+    let token = atob(localStorage.getItem("token"));
     let username = token.split("::")[0];
     let password = token.split("::")[1];
 
     this.fs.checkCredential(username,password).then(res => {
-      return res;
+      if(res==true){
+        this.isUserLogged=true;
+      }
     })
   }
 
