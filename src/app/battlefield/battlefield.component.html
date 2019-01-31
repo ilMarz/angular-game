@@ -28,7 +28,7 @@
   </mat-grid-list>
   </div>
   <div class="col-md-6">
-    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
+    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="true">
         <mat-grid-tile  *ngFor="let num of range; let i = index" 
         (click)="launchAttack(i)"
         [class.type1selected]="checkIfCellIsHit(i,1)"

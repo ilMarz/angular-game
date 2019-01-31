@@ -16,7 +16,7 @@ export interface credentialListFirebaseInterface {
 
 export class FirebaseService {
 
-  constructor(afs: AngularFirestore) {
+  constructor(private afs: AngularFirestore) {
     this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
     this.credential = afs.collection<credentialListFirebaseInterface>('user');
     this.setDocId(new Date().getTime().toString());
@@ -94,6 +94,20 @@ export class FirebaseService {
       })
     });
   } 
+
+  attack(){
+    this.cellCollection.doc("1548787570824/players/username").ref.get().then((playerDocument)=>{
+      var playerDocumentToUpdate = {cellList: [], player: playerDocument.data().player, username: playerDocument.data().username};
+      
+      playerDocument.data().cellList.forEach(element => {
+        element.hit=false;
+        playerDocumentToUpdate.cellList.push(element);
+      });
+      
+      this.cellCollection.doc("1548787570824/players/username").set(playerDocumentToUpdate);
+      console.log(playerDocumentToUpdate);
+    })
+  }
 
   //private methods  
 

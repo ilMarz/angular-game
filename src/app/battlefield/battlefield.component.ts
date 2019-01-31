@@ -83,7 +83,8 @@ export class BattlefieldComponent implements OnInit {
   }
 
   launchAttack(index: number){
-    var isHit = this.utilService.isOppositeCellHit(index,this.oppositeCellList);
+   // var isHit = this.utilService.isOppositeCellHit(index,this.oppositeCellList);
+   this.firebaseService.attack();
   }
 
   checkIfCellIsHit(index: number, type: number){
