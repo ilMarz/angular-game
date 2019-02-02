@@ -87,9 +87,16 @@ export class BattlefieldComponent implements OnInit {
   }
 
   selectMatch(documentId: string){
+    this.resetItemObject();
     this.documentId = documentId;
     this.checkMatchStatus();
-    this.getCellListByUsername(documentId,this.username);
+    var docPath = documentId+"/players/"+this.username;
+    //this.getCellListByUsername(documentId,this.username);
+
+    this.cellCollection.doc(docPath).snapshotChanges().forEach(docList=>{
+      console.log(docList.payload.data())
+      this.selectedCellList = docList.payload.data().cellList;
+    })
 
   }
 
