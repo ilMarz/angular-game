@@ -53,7 +53,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   clickedCellHandler(index: number){
-    if(this.isConfirmed || this.itemList.length>=6){      
+    if(this.isConfirmed || this.itemList.length>=6 || this.matchReady){      
       return
     }
     this.disableAllItemButton=true;
