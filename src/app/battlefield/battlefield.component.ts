@@ -24,19 +24,21 @@ export class BattlefieldComponent implements OnInit {
 
   disableAllItemButton = false;
   isConfirmed=false;
-  oppositeCellList: SelectedCell[] = new Array();
+  matchReady = false;
+  matchLog = "No match init";
+  completed = false;
 
   item: Item = {type: null, neighborList: new Array()};
   itemList: Item[] = new Array();
   selectedCellList: SelectedCell[] = new Array(); 
+  oppositeCellList: SelectedCell[] = new Array();
+
+  openedMatchList = new Array();
 
   selectedType = 1;
 
-  completed = false;
-
   credentialMap = this.authService.getCredentialMapFromLocalStorage();
   username = this.credentialMap.username;
-  openedMatchList = new Array();
   documentId: string = null;
 
   constructor(private utilService: UtilService, 
@@ -85,6 +87,8 @@ export class BattlefieldComponent implements OnInit {
 
   selectMatch(documentId: string){
     this.documentId = documentId;
+    this.checkMatchStatus();
+
   }
 
   //private
@@ -152,10 +156,20 @@ export class BattlefieldComponent implements OnInit {
          
   }
 
+  private checkMatchStatus(){
+    this.openedMatchList.forEach(d=>{
+        this.matchReady = d.payload.doc.id==this.documentId && d.payload.doc.data().status=="ready";
+        if(this.matchReady){
+          this.matchLog = "match " + this.documentId + " " + d.payload.doc.data().status + " player1: " + d.payload.doc.data().player[0] + " -- player2: " + d.payload.doc.data().player[1]
+        }
+      })
+  }
+
   //FIREBASE
 
   insertCellListOnFirebase(){
-    this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
+    this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
+    this.matchLog = "Match " + this.documentId + " INIT";
   }
 
   searchMatch(){
@@ -168,6 +182,7 @@ export class BattlefieldComponent implements OnInit {
 
     this.cellCollection.snapshotChanges().forEach(docList=>{
       this.openedMatchList = docList;
+      this.checkMatchStatus();
     })
   }  
 }

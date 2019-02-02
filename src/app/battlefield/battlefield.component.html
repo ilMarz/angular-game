@@ -6,7 +6,7 @@
                 <mat-card-title>MATCH</mat-card-title>
                 <mat-card-subtitle *ngIf="!isExistingMatch || !matchReady"><input [(ngModel)]="matchId" matInput placeholder="find..."></mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content [style.overflow]="'auto'"  [style.height.px]="'300'">
+            <mat-card-content [style.overflow]="'auto'"  [style.height.px]="'400'">
                     <mat-action-list>
                         <mat-list-item (click)="selectMatch(match.payload.doc.id)" *ngFor="let match of openedMatchList | MatchFilter: matchId" role="listitem">{{match.payload.doc.id}}</mat-list-item>
                     </mat-action-list>
@@ -27,6 +27,15 @@
             [class.type5selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,5)"
             [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"></mat-grid-tile>
         </mat-grid-list>
+        <mat-card class="match-list">
+            <mat-card-header>
+                <mat-card-title>LOG</mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="background-color: black" [style.overflow]="'auto'"  [style.height.px]="'100'">
+                <p style="color: green">status: {{matchLog}}</p>
+            </mat-card-content>
+		</mat-card>
+        
     </div>
 
   <div class="col-md-5">

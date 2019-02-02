@@ -45,7 +45,8 @@ export class FirebaseService {
         this.cellCollection.doc(documentID).set({date: matchDate, player: playerArray, status: "ready"});
         this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username});
       })
-   }      
+   }    
+   return documentID;  
   }
 
   checkIfDocExist(docId: string, username: string) {
