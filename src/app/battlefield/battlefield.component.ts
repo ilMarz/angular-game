@@ -25,7 +25,7 @@ export class BattlefieldComponent implements OnInit {
   disableAllItemButton = false;
   isConfirmed=false;
   matchReady = false;
-  matchLog = "No match init";
+  matchLog = new Array();
   completed = false;
 
   item: Item = {type: null, neighborList: new Array()};
@@ -49,6 +49,7 @@ export class BattlefieldComponent implements OnInit {
    }
 
   ngOnInit() {
+    this.matchLog.push("No match init");
     this.searchMatch()
   }
 
@@ -103,7 +104,7 @@ export class BattlefieldComponent implements OnInit {
 
   insertCellListOnFirebase(){
     this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
-    this.matchLog = "Match " + this.documentId + " INIT";
+    this.matchLog.push("Match " + this.documentId + " INIT");
   }
 
   //private
@@ -178,7 +179,7 @@ export class BattlefieldComponent implements OnInit {
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
     this.matchReady = matchById.payload.doc.data().status=="ready";
     if(this.matchReady){
-      this.matchLog = "match " + this.documentId + " " + matchById.payload.doc.data().status + " player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1]
+      this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status + " player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1])
     }
   }
 

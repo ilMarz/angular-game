@@ -29,7 +29,9 @@
                 <mat-card-title>LOG</mat-card-title>
             </mat-card-header>
             <mat-card-content style="background-color: black" [style.overflow]="'auto'"  [style.height.px]="'100'">
-                <p style="color: green">status: {{matchLog}}</p>
+                <ul>
+                    <li *ngFor="let msg of matchLog" style="color: green">status: {{msg}}</li>
+                </ul>
             </mat-card-content>
 		</mat-card>
         
