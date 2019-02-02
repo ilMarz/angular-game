@@ -88,7 +88,22 @@ export class BattlefieldComponent implements OnInit {
   selectMatch(documentId: string){
     this.documentId = documentId;
     this.checkMatchStatus();
+    this.getCellListByUsername(documentId,this.username);
 
+  }
+
+  getCellListByUsername(docId: string, username: string) {
+    this.firebaseService.getCellListByUsername(docId,username).then(data=>{
+      console.log(data.data())
+    })
+    .catch(error=>{
+      console.log("error on getCellListByUsername", error)
+    })
+  }
+
+  insertCellListOnFirebase(){
+    this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
+    this.matchLog = "Match " + this.documentId + " INIT";
   }
 
   //private
@@ -157,32 +172,29 @@ export class BattlefieldComponent implements OnInit {
   }
 
   private checkMatchStatus(){
-    this.openedMatchList.forEach(d=>{
-        this.matchReady = d.payload.doc.id==this.documentId && d.payload.doc.data().status=="ready";
-        if(this.matchReady){
-          this.matchLog = "match " + this.documentId + " " + d.payload.doc.data().status + " player1: " + d.payload.doc.data().player[0] + " -- player2: " + d.payload.doc.data().player[1]
-        }
-      })
+    if(this.documentId==null){
+      return
+    }
+    var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
+    this.matchReady = matchById.payload.doc.data().status=="ready";
+    if(this.matchReady){
+      this.matchLog = "match " + this.documentId + " " + matchById.payload.doc.data().status + " player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1]
+    }
   }
+
+  private searchMatch(){
+
+    this.cellCollection.snapshotChanges().forEach(docList=>{
+      this.openedMatchList = docList;
+      this.checkMatchStatus();
+    })
+  } 
 
   //FIREBASE
-
-  insertCellListOnFirebase(){
-    this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
-    this.matchLog = "Match " + this.documentId + " INIT";
-  }
-
-  searchMatch(){
     /*
     use valueChanges() to get data and snapshotChanges() whenever you might need metadata, eg. deleting or updating document.
     
     this.cellCollectionObs.forEach(e=>{
     console.log(e)
   })*/
-
-    this.cellCollection.snapshotChanges().forEach(docList=>{
-      this.openedMatchList = docList;
-      this.checkMatchStatus();
-    })
-  }  
 }

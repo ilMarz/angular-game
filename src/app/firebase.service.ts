@@ -49,13 +49,16 @@ export class FirebaseService {
    return documentID;  
   }
 
-  checkIfDocExist(docId: string, username: string) {
+  getCellListByUsername(docId: string, username: string) {
     var docPath = docId+"/players/"+username;
 
-    return new Promise<Object>(resolve => {
+    return new Promise<Object>((resolve,reject) => {
 
       this.cellCollection.doc(docPath).ref.get().then(data=>{
         resolve(data)
+      })
+      .catch(error=>{
+        reject(error)
       })
     });
   }  
