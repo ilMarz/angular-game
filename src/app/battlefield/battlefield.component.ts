@@ -93,9 +93,17 @@ export class BattlefieldComponent implements OnInit {
     var docPath = documentId+"/players/"+this.username;
     //this.getCellListByUsername(documentId,this.username);
 
-    this.cellCollection.doc(docPath).snapshotChanges().forEach(docList=>{
-      console.log(docList.payload.data())
-      this.selectedCellList = docList.payload.data().cellList;
+    this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
+      docList.forEach(doc=>{
+        console.log(doc.payload.doc.data())
+      })
+      var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
+      var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
+      this.selectedCellList = myDoc.payload.doc.data().cellList;
+      this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
+      console.log(this.oppositeCellList)
+      //console.log(docList)
+      //this.selectedCellList = docList.payload.data().cellList;
     })
 
   }
