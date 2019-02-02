@@ -30,6 +30,9 @@ export class LoginComponent implements OnInit {
     this.authService.create(this.username,this.password).then(()=>{
       this.router.navigate(['/play']);
     })
+    .catch(error=>{
+      console.log("user already exists")
+    })
   }
 
 }

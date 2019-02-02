@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from './firebase.service';
+import { reject } from 'q';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class AuthService {
 
   create(username: string, password: string){
 
-    return new Promise<Object>(resolve => {
+    return new Promise<Object>((resolve, reject) => {
       this.fs.checkCredential(username,password).then(userExists=>{
           if(!userExists){
             this.fs.insertUser(username,password).then(()=>{
@@ -34,9 +35,12 @@ export class AuthService {
               localStorage.setItem("token", token);
               resolve();
 
+            }).catch(error=>{
+              console.log("error create user", error)
+              reject();
             })
           }
-          resolve();
+          reject();
       })
     })
   }
