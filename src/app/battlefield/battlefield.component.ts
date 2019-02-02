@@ -179,7 +179,8 @@ export class BattlefieldComponent implements OnInit {
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
     this.matchReady = matchById.payload.doc.data().status=="ready";
     if(this.matchReady){
-      this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status + " player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1])
+      this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status)
+      this.matchLog.push(" player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1])
     }
   }
 
