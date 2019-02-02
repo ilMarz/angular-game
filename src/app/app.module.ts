@@ -16,13 +16,17 @@ import { environment } from '../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatCardModule} from '@angular/material/card';
+import { SearchPipe } from './_pipe/search.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     BattlefieldComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    SearchPipe
   ],
   imports: [
     BrowserModule,
@@ -34,7 +38,9 @@ import {MatInputModule} from '@angular/material/input';
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
     FormsModule,
-    MatInputModule
+    MatInputModule,
+    MatListModule,
+    MatCardModule
     
   ],
   providers: [],

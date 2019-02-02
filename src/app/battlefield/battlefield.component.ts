@@ -3,10 +3,8 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { Observable } from 'rxjs';
 import { UtilService, SelectedCell, Item, Neighbor } from '../util.service';
 import { FirebaseService } from '../firebase.service';
-
-export interface selectedCellListFirebaseInterface { 
-                                                      cellList: Object[]
-                                                  }
+import { AuthService} from '../auth.service';
+import { firestore } from 'firebase';
 
 @Component({
   selector: 'app-battlefield',
@@ -15,8 +13,8 @@ export interface selectedCellListFirebaseInterface {
 })
 export class BattlefieldComponent implements OnInit {
 
-  private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
-  cellCollectionObs: Observable<selectedCellListFirebaseInterface[]>;
+  private cellCollection: AngularFirestoreCollection;
+  //private cellCollectionObs: Observable<selectedCellListFirebaseInterface[]>;
 
   @Input('matchId')
   matchId: string = null;
@@ -26,28 +24,31 @@ export class BattlefieldComponent implements OnInit {
 
   disableAllItemButton = false;
   isConfirmed=false;
-  isExistingMatch = false;
-  errorMessage=null;
-  matchReady = false;
-  matchState=null;
-  listener = null;
   oppositeCellList: SelectedCell[] = new Array();
 
   item: Item = {type: null, neighborList: new Array()};
   itemList: Item[] = new Array();
   selectedCellList: SelectedCell[] = new Array(); 
-  selectedCellListFirebase: selectedCellListFirebaseInterface = { cellList: [] };
 
   selectedType = 1;
 
   completed = false;
 
-  constructor(private afs: AngularFirestore, private utilService: UtilService, private firebaseService: FirebaseService) {
-    this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
-    this.cellCollectionObs = this.cellCollection.valueChanges();
+  credentialMap = this.authService.getCredentialMapFromLocalStorage();
+  username = this.credentialMap.username;
+  openedMatchList = new Array();
+  documentId: string = null;
+
+  constructor(private utilService: UtilService, 
+    private firebaseService: FirebaseService,
+    private authService : AuthService) {
+    this.cellCollection = firebaseService.getCellCollection();
+    //this.cellCollectionObs = this.cellCollection.valueChanges();
    }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.searchMatch()
+  }
 
   clickedCellHandler(index: number){
     if(this.isConfirmed || this.itemList.length>=6){      
@@ -69,26 +70,21 @@ export class BattlefieldComponent implements OnInit {
     return this.disableAllItemButton || this.itemList.some(e=>e.type==type);
   }
 
-  removeItem(type:number){
-    this.completed = false;
-    console.log("remove");
-    this.removeSelectedItemAndAllCellsByType(type);
-    this.setNewSelectedType();
-  }
-
   confirm(){
     console.log("confirm");
-    console.log(this.selectedCellList);
     this.insertCellListOnFirebase();
   }
 
   launchAttack(index: number){
    // var isHit = this.utilService.isOppositeCellHit(index,this.oppositeCellList);
-   this.firebaseService.attack();
   }
 
   checkIfCellIsHit(index: number, type: number){
     return this.utilService.getHitCellType(index,type,this.oppositeCellList);
+  }
+
+  selectMatch(documentId: string){
+    this.documentId = documentId;
   }
 
   //private
@@ -125,15 +121,9 @@ export class BattlefieldComponent implements OnInit {
     }
   }
 
-  private removeSelectedItemAndAllCellsByType(type: number){
-    this.itemList = this.itemList.filter(e => e.type!=type);
-    this.selectedCellList = this.selectedCellList.filter(e=>e.type!=type); 
-
-  }
-
   private addCellToSelectedCellList(cell: SelectedCell){
     this.selectedCellList.push(cell);
-    this.selectedCellListFirebase.cellList.push(cell);
+   // this.selectedCellListFirebase.cellList.push(cell);
   }
 
   private createItem(index: number){
@@ -165,16 +155,19 @@ export class BattlefieldComponent implements OnInit {
   //FIREBASE
 
   insertCellListOnFirebase(){
-    var obj = {player: 1, username: "user", cellList: this.selectedCellList};
-    var docId = new Date().getTime().toString();
-    this.cellCollection.doc(docId+"/players/"+"username").set(obj);
+    this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
   }
 
-  async searchMatch(){
-    var res = await this.firebaseService.checkIfDocExist("1548787570824","username");
-    var r = await this.firebaseService.getAllMatchIDsByUser("username");
-    console.log("match from battlefield", r)
-  }
+  searchMatch(){
+    /*
+    use valueChanges() to get data and snapshotChanges() whenever you might need metadata, eg. deleting or updating document.
+    
+    this.cellCollectionObs.forEach(e=>{
+    console.log(e)
+  })*/
 
-  
+    this.cellCollection.snapshotChanges().forEach(docList=>{
+      this.openedMatchList = docList;
+    })
+  }  
 }

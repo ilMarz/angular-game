@@ -26,4 +26,10 @@ export class LoginComponent implements OnInit {
     })
   }
 
+  createUser(){
+    this.authService.create(this.username,this.password).then(()=>{
+      this.router.navigate(['/play']);
+    })
+  }
+
 }

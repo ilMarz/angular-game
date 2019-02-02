@@ -1,34 +1,36 @@
-<div class="container">
-<div *ngIf="!isExistingMatch || !matchReady">
-    <span>Find match<input type="text" [(ngModel)]="matchId"></span>
-    <button [disabled]="matchId==null" (click)="searchMatch()">click</button>
-    <span>{{errorMessage}}</span>
-</div>
-<div *ngIf="isExistingMatch || matchReady">
-{{matchState}} {{matchId}}
-</div>
-
-<label for="">Selected Item</label> {{selectedType}}
-    
+<div class="container">    
   <div class="row">
-      <div class="col-md-1">
-          <label for="">inseriti:</label>
-          <div class="inserted-item" *ngFor="let inserted of itemList" (click)="removeItem(inserted.type)"> Type {{inserted.type}}</div>
-      </div>
-  <div class="grid-container" class="col-md-5">    
-  <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
-    <mat-grid-tile  *ngFor="let num of range; let i = index" 
-    (click)="clickedCellHandler(i)" 
-    [class.type1selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,1)"
-    [class.type2selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,2)"
-    [class.type3selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,3)"
-    [class.type4selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,4)"
-    [class.type5selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,5)"
-    [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"></mat-grid-tile>
-  </mat-grid-list>
-  </div>
-  <div class="col-md-6">
-    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="true">
+    <div class="col-md-2">
+        <mat-card class="match-list">
+            <mat-card-header>
+                <mat-card-title>MATCH</mat-card-title>
+                <mat-card-subtitle *ngIf="!isExistingMatch || !matchReady"><input [(ngModel)]="matchId" matInput placeholder="find..."></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content [style.overflow]="'auto'"  [style.height.px]="'300'">
+                    <mat-action-list>
+                        <mat-list-item (click)="selectMatch(match.payload.doc.id)" *ngFor="let match of openedMatchList | MatchFilter: matchId" role="listitem">{{match.payload.doc.id}}</mat-list-item>
+                    </mat-action-list>
+            </mat-card-content>
+            <mat-card-actions>
+					<button mat-raised-button>JOIN</button>
+			</mat-card-actions>
+		</mat-card>
+    </div>
+    <div class="grid-container" class="col-md-5">    
+        <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
+            <mat-grid-tile  *ngFor="let num of range; let i = index" 
+            (click)="clickedCellHandler(i)" 
+            [class.type1selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,1)"
+            [class.type2selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,2)"
+            [class.type3selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,3)"
+            [class.type4selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,4)"
+            [class.type5selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,5)"
+            [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"></mat-grid-tile>
+        </mat-grid-list>
+    </div>
+
+  <div class="col-md-5">
+    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
         <mat-grid-tile  *ngFor="let num of range; let i = index" 
         (click)="launchAttack(i)"
         [class.type1selected]="checkIfCellIsHit(i,1)"
@@ -40,7 +42,7 @@
         ></mat-grid-tile>
     </mat-grid-list>
   </div>
-  <div class="col-md-6 item-selector">
+  <div class="col-md-7 item-selector">
       <div class="container">
         <div class="row space-between">
             <button *ngFor="let item of [1,2,3,4,5,6]" 
@@ -49,6 +51,6 @@
       </div>
       <span *ngIf="completed && !isConfirmed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
   </div>
-  <div class="col-md-6"></div>
+  <div class="col-md-5"></div>
   </div>
 </div>

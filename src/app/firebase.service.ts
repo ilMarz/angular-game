@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-
-export interface selectedCellListFirebaseInterface { 
-  cellList: Object[]
-}
+import {SelectedCell} from './util.service'
 
 export interface credentialListFirebaseInterface { 
   credentialList: Object[]
@@ -17,41 +13,39 @@ export interface credentialListFirebaseInterface {
 export class FirebaseService {
 
   constructor(private afs: AngularFirestore) {
-    this.cellCollection = afs.collection<selectedCellListFirebaseInterface>('match');
+    this.cellCollection = afs.collection('match');
     this.credential = afs.collection<credentialListFirebaseInterface>('user');
-    this.setDocId(new Date().getTime().toString());
    }
 
-  private cellCollection: AngularFirestoreCollection<selectedCellListFirebaseInterface>;
-  private docId: string;
-  private player: string = "player1";
+  private cellCollection: AngularFirestoreCollection;
   private credential: AngularFirestoreCollection<credentialListFirebaseInterface>;
+
+  getCellCollection():AngularFirestoreCollection{
+    return this.cellCollection;
+  }
 
 
   //public methods
-  insertPlayerOneCellListAndReturnPromise(username: string, selectedCellListFirebase: selectedCellListFirebaseInterface){
-      
-    //var listener = this.getListenerObjectOnCollection("player2");    
-    this.setMatchState("init");
-    return this.cellCollection.doc(this.docId).collection(this.player).doc(username).set(selectedCellListFirebase);
-  }
+  insertCellList(documentID: string, username: string, cellList: SelectedCell[]){
+   var player = 1;
+   var date = new Date();
 
-  insertPlayerTwoCellListAndReturnPromise(username: string, selectedCellListFirebase: selectedCellListFirebaseInterface){
-    this.player = "player2";
-    this.setMatchState("loading");
-    return this.insertPlayerOneCellListAndReturnPromise(username, selectedCellListFirebase);
-  }
+   if(documentID==null){
+      documentID = date.getTime().toString();
+      this.cellCollection.doc(documentID).set({date: date, player: [username, null], status: "init"})
+      this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username})
+   }
+   else {
+      player = 2;
+      this.cellCollection.doc(documentID).ref.get().then(data=>{
+        var matchDate = data.data().date;
+        var player1Username = data.data().player[0];
+        var playerArray = [player1Username,username];
 
-
-  setDocId(docId: string){
-    this.docId = docId;
-  }
-
-  getListenerObjectOnCollection(collectionName: string){
-    if(this.docId==null){
-      return null
-    }
-    return this.cellCollection.doc(this.docId).collection(collectionName).valueChanges();
+        this.cellCollection.doc(documentID).set({date: matchDate, player: playerArray, status: "ready"});
+        this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username});
+      })
+   }      
   }
 
   checkIfDocExist(docId: string, username: string) {
@@ -60,29 +54,10 @@ export class FirebaseService {
     return new Promise<Object>(resolve => {
 
       this.cellCollection.doc(docPath).ref.get().then(data=>{
-        console.log("exist from service");
         resolve(data)
       })
     });
-  } 
-
-  getAllMatchIDsByUser(username: string) {
-    
-    return new Promise<Object>(resolve => {
-
-      this.cellCollection.get().forEach(data=>{
-        data.forEach(match=>{
-          this.cellCollection.doc(match.id+"/players/"+username).ref.get().then(data=>{
-            //console.log("match exist");
-            if(data.exists){
-              resolve(match.id)
-            }
-          })
-        })
-        //resolve(data)
-      })
-    });
-  } 
+  }  
 
   checkCredential(username: string, password: string) {
 
@@ -95,28 +70,22 @@ export class FirebaseService {
     });
   } 
 
-  attack(){
-    this.cellCollection.doc("1548787570824/players/username").ref.get().then((playerDocument)=>{
-      var playerDocumentToUpdate = {cellList: [], player: playerDocument.data().player, username: playerDocument.data().username};
-      
-      playerDocument.data().cellList.forEach(element => {
-        element.hit=false;
-        playerDocumentToUpdate.cellList.push(element);
-      });
-      
-      this.cellCollection.doc("1548787570824/players/username").set(playerDocumentToUpdate);
-      console.log(playerDocumentToUpdate);
-    })
+  insertUser(username: string, password: string){
+    return new Promise<Object>(resolve => {
+
+      this.credential.doc("credentials").ref.get().then(data=>{
+        console.log(data.data())
+        var credentialList = data.data().credentialList;
+        var obj = {credentialList: []};
+        credentialList.push({username: username, password: password});
+        obj.credentialList = credentialList;
+        this.credential.doc("credentials").set(obj);
+        resolve();
+      })
+    });
   }
 
   //private methods  
-
-  private setMatchState(state: string){
-    if(this.docId==null){
-      return null
-    }
-    this.cellCollection.doc(this.docId).set({date: new Date(), status: "init"});
-  }
 
  /* subscribeToListener(listener: Observable<DocumentData[]>){
     listener.subscribe((q)=>{

@@ -10,19 +10,35 @@ import { AuthService } from './auth.service';
 })
 export class AppComponent {
   title = 'Angular Game';
+  showLogout = false;
 
   constructor(private fs: FirebaseService, private router: Router, private authService: AuthService){}
 
   ngOnInit() {
-    if(localStorage.getItem("token")==null){
-      return;
+
+    this.showLogout = this.authService.isUserLogged;
+
+    let credentialMapFromLocalStorage = this.getCredentialMapFromLocalStorage();
+    if( credentialMapFromLocalStorage==undefined){
+      return
     }
-    let token = atob(localStorage.getItem("token"));
-    let username = token.split("::")[0];
-    let password = token.split("::")[1];   
+    let username = credentialMapFromLocalStorage.username;
+    let password = credentialMapFromLocalStorage.password;
 
     this.authService.login(username,password).then(data =>{
+      this.showLogout = true;
       this.router.navigate(['/play']);
     })
+  }
+
+  logout(){
+    this.authService.logout();
+    this.router.navigate(['']);
+    this.showLogout = false;
+  }
+
+  //private
+  private getCredentialMapFromLocalStorage():{ [key:string]:string; }{
+    return this.authService.getCredentialMapFromLocalStorage();
   }
 }
