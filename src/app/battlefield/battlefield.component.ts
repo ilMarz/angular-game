@@ -39,6 +39,7 @@ export class BattlefieldComponent implements OnInit {
 
   credentialMap = this.authService.getCredentialMapFromLocalStorage();
   username = this.credentialMap.username;
+  oppositeUsername = null;
   documentId: string = null;
 
   constructor(private utilService: UtilService, 
@@ -62,8 +63,16 @@ export class BattlefieldComponent implements OnInit {
   }
 
   checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
+    if(this.checkIfCellIsHitByOpposite(index)){
+      return
+    }
     return this.utilService.checkIfCellIsSelectedByIndexAndSetColourByType(this.selectedCellList,index,type);
   }
+
+  checkIfCellIsHitByOpposite(index:number){
+    return this.selectedCellList.some(cell => cell.index == index && cell.hit==true)
+  }
+  
 
   setType(type: number){
     this.selectedType = type;
@@ -79,7 +88,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   launchAttack(index: number){
-    this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.username,this.oppositeCellList);
+    this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.oppositeUsername,this.oppositeCellList);
   }
 
   checkIfCellIsHit(index: number, type: number){
@@ -92,13 +101,13 @@ export class BattlefieldComponent implements OnInit {
     this.checkMatchStatus();
 
     this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
-      docList.forEach(doc=>{
-        console.log(doc.payload.doc.data())
-      })
       var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
       var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
-      this.selectedCellList = myDoc.payload.doc.data().cellList;
+      if(myDoc!=undefined){
+        this.selectedCellList = myDoc.payload.doc.data().cellList;
+      }
       this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
+      this.oppositeUsername = oppositeDoc.payload.doc.data().username;
       console.log(this.oppositeCellList)
       //console.log(docList)
       //this.selectedCellList = docList.payload.data().cellList;

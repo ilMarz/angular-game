@@ -22,7 +22,9 @@
             [class.type3selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,3)"
             [class.type4selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,4)"
             [class.type5selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,5)"
-            [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"></mat-grid-tile>
+            [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"
+            [class.isHit]="checkIfCellIsHitByOpposite(i)"
+            ></mat-grid-tile>
         </mat-grid-list>
         <mat-card class="match-list">
             <mat-card-header>
