@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {FirebaseService} from './firebase.service';
 
 
 export interface SelectedCell { 
@@ -21,7 +22,7 @@ export interface Neighbor {
 })
 export class UtilService {
 
-  constructor() { }
+  constructor(private fs: FirebaseService) { }
 
   private colNumber = 11;
 
@@ -68,9 +69,12 @@ export class UtilService {
     return this.colNumber;
   }
 
-  isOppositeCellHit(index: number, oppositeCellList: SelectedCell[]){
-    var attackedCell = oppositeCellList.find(e=>e.index==index);
-    return attackedCell!=undefined;
+  setHitCellInOppositeCellList(index: number, documentId: string, username: string, oppositeCellList: SelectedCell[]){
+    oppositeCellList.forEach(oppositeCell=>{
+      oppositeCell.hit=oppositeCell.index==index;
+    })
+
+    this.fs.insertCellList(documentId,username,oppositeCellList)
   }
 
   getHitCellType(index: number, type: number, oppositeCellList: SelectedCell[]){

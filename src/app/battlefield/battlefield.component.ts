@@ -79,7 +79,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   launchAttack(index: number){
-   // var isHit = this.utilService.isOppositeCellHit(index,this.oppositeCellList);
+    this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.username,this.oppositeCellList);
   }
 
   checkIfCellIsHit(index: number, type: number){
@@ -90,8 +90,6 @@ export class BattlefieldComponent implements OnInit {
     this.resetItemObject();
     this.documentId = documentId;
     this.checkMatchStatus();
-    var docPath = documentId+"/players/"+this.username;
-    //this.getCellListByUsername(documentId,this.username);
 
     this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
       docList.forEach(doc=>{
@@ -106,15 +104,6 @@ export class BattlefieldComponent implements OnInit {
       //this.selectedCellList = docList.payload.data().cellList;
     })
 
-  }
-
-  getCellListByUsername(docId: string, username: string) {
-    this.firebaseService.getCellListByUsername(docId,username).then(data=>{
-      console.log(data.data())
-    })
-    .catch(error=>{
-      console.log("error on getCellListByUsername", error)
-    })
   }
 
   insertCellListOnFirebase(){
