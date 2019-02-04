@@ -18,7 +18,6 @@
             <mat-grid-tile  *ngFor="let num of range; let i = index" 
             (click)="clickedCellHandler(i)" 
             [ngClass]="checkIfCellIsSelectedByIndexAndSetColourByType(i)"
-            [class.isHit]="checkIfCellIsHitByOpposite(i)"
             ></mat-grid-tile>
         </mat-grid-list>
         <mat-card class="match-list">

@@ -71,7 +71,9 @@ export class UtilService {
 
   setHitCellInOppositeCellList(index: number, documentId: string, username: string, oppositeCellList: SelectedCell[]){
     oppositeCellList.forEach(oppositeCell=>{
-      oppositeCell.hit=oppositeCell.index==index;
+      if(!oppositeCell.hit && oppositeCell.index==index){
+        oppositeCell.hit=true;
+      }
     })
 
     this.fs.insertCellList(documentId,username,oppositeCellList)

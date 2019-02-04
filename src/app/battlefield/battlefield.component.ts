@@ -67,11 +67,7 @@ export class BattlefieldComponent implements OnInit {
     if(selectedCell==undefined){
       return
     }
-    return "type"+selectedCell.type+"selected"
-  }
-
-  checkIfCellIsHitByOpposite(index:number){
-    return this.selectedCellList.some(cell => cell.index == index && cell.hit==true)
+    return selectedCell.hit? "isHit" : "type"+selectedCell.type+"selected"
   }
   
 
