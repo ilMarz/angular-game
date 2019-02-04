@@ -17,12 +17,7 @@
         <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
             <mat-grid-tile  *ngFor="let num of range; let i = index" 
             (click)="clickedCellHandler(i)" 
-            [class.type1selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,1)"
-            [class.type2selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,2)"
-            [class.type3selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,3)"
-            [class.type4selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,4)"
-            [class.type5selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,5)"
-            [class.type6selected]="checkIfCellIsSelectedByIndexAndSetColourByType(i,6)"
+            [ngClass]="checkIfCellIsSelectedByIndexAndSetColourByType(i)"
             [class.isHit]="checkIfCellIsHitByOpposite(i)"
             ></mat-grid-tile>
         </mat-grid-list>

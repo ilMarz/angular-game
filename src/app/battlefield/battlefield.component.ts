@@ -62,11 +62,12 @@ export class BattlefieldComponent implements OnInit {
     this.createItem(index);
   }
 
-  checkIfCellIsSelectedByIndexAndSetColourByType(index: number, type: number){
-    if(this.checkIfCellIsHitByOpposite(index)){
+  checkIfCellIsSelectedByIndexAndSetColourByType(index: number){
+    let selectedCell=this.selectedCellList.find(cell=>{ return cell.index==index})
+    if(selectedCell==undefined){
       return
     }
-    return this.utilService.checkIfCellIsSelectedByIndexAndSetColourByType(this.selectedCellList,index,type);
+    return "type"+selectedCell.type+"selected"
   }
 
   checkIfCellIsHitByOpposite(index:number){
