@@ -106,16 +106,18 @@ export class UtilService {
 
   private checkIfCellIsHit(index: number, cellList: SelectedCell[], isOpponentField: boolean){
     let selectedCell=cellList.find(cell=>cell.index==index)
-    if(selectedCell==undefined){
+    if(selectedCell==undefined || (!selectedCell.hit && isOpponentField)){
       return
     }
+
     if(selectedCell.hit){
-      return selectedCell.type==999 ? "isMissed" : "isHit"
+      if(selectedCell.type==999){
+        return "isMissed"
+      }
+      return isOpponentField ? "type"+selectedCell.type+"selected" : "isHit"
     }
-    if(!isOpponentField){
-      return "type"+selectedCell.type+"selected";
-    }
-    else return
+    
+    return "type"+selectedCell.type+"selected"
   }
   
   private getCellByIndex(arrayToCheck: SelectedCell[], index:number){
