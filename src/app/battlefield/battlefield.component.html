@@ -17,7 +17,7 @@
         <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
             <mat-grid-tile  *ngFor="let num of range; let i = index" 
             (click)="clickedCellHandler(i)" 
-            [ngClass]="checkIfCellIsSelectedByIndexAndSetColourByType(i)"
+            [ngClass]="checkIfCellIsHit(i)"
             ></mat-grid-tile>
         </mat-grid-list>
         <mat-card class="match-list">
@@ -37,12 +37,7 @@
     <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
         <mat-grid-tile  *ngFor="let num of range; let i = index" 
         (click)="launchAttack(i)"
-        [class.type1selected]="checkIfCellIsHit(i,1)"
-        [class.type2selected]="checkIfCellIsHit(i,2)"
-        [class.type3selected]="checkIfCellIsHit(i,3)"
-        [class.type4selected]="checkIfCellIsHit(i,4)"
-        [class.type5selected]="checkIfCellIsHit(i,5)"
-        [class.type6selected]="checkIfCellIsHit(i,6)"
+        [ngClass]="checkIfCellIsHitOnEnemyField(i)"
         ></mat-grid-tile>
     </mat-grid-list>
   </div>

@@ -61,21 +61,6 @@ export class BattlefieldComponent implements OnInit {
     this.disableAllItemButton=true;
     this.createItem(index);
   }
-
-  checkIfCellIsSelectedByIndexAndSetColourByType(index: number){
-    let selectedCell=this.selectedCellList.find(cell=>cell.index==index)
-    if(selectedCell==undefined){
-      return
-    }
-
-    if(!selectedCell.hit){
-      return "type"+selectedCell.type+"selected";
-    }
-    if(selectedCell.type==999){
-      return "isMissed"
-    }
-    return "isHit" 
-  }
   
 
   setType(type: number){
@@ -95,8 +80,12 @@ export class BattlefieldComponent implements OnInit {
     this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.oppositeUsername,this.oppositeCellList);
   }
 
-  checkIfCellIsHit(index: number, type: number){
-    return this.utilService.getHitCellType(index,type,this.oppositeCellList);
+  checkIfCellIsHit(index: number){
+    return this.utilService.checkIfCellIsHitOnField(index,this.selectedCellList)
+  }
+
+  checkIfCellIsHitOnEnemyField(index: number, type: number){
+    return this.utilService.checkIfCellIsHitOnEnemyField(index,this.oppositeCellList)
   }
 
   selectMatch(documentId: string){

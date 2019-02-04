@@ -94,9 +94,29 @@ export class UtilService {
     return cellByIndex!=undefined ? cellByIndex.type==type : false;
   }
 
+  checkIfCellIsHitOnEnemyField(index: number, cellList: SelectedCell[]){
+    return this.checkIfCellIsHit(index, cellList,true)
+  }
 
+  checkIfCellIsHitOnField(index: number, cellList: SelectedCell[]){
+    return this.checkIfCellIsHit(index, cellList,false) 
+  }
 
   //private
+
+  private checkIfCellIsHit(index: number, cellList: SelectedCell[], isOpponentField: boolean){
+    let selectedCell=cellList.find(cell=>cell.index==index)
+    if(selectedCell==undefined){
+      return
+    }
+    if(selectedCell.hit){
+      return selectedCell.type==999 ? "isMissed" : "isHit"
+    }
+    if(!isOpponentField){
+      return "type"+selectedCell.type+"selected";
+    }
+    else return
+  }
   
   private getCellByIndex(arrayToCheck: SelectedCell[], index:number){
     return arrayToCheck.find(cell => cell.index === index);
