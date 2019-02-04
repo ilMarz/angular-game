@@ -63,11 +63,18 @@ export class BattlefieldComponent implements OnInit {
   }
 
   checkIfCellIsSelectedByIndexAndSetColourByType(index: number){
-    let selectedCell=this.selectedCellList.find(cell=>{ return cell.index==index})
+    let selectedCell=this.selectedCellList.find(cell=>cell.index==index)
     if(selectedCell==undefined){
       return
     }
-    return selectedCell.hit? "isHit" : "type"+selectedCell.type+"selected"
+
+    if(!selectedCell.hit){
+      return "type"+selectedCell.type+"selected";
+    }
+    if(selectedCell.type==999){
+      return "isMissed"
+    }
+    return "isHit" 
   }
   
 

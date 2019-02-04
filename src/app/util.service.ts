@@ -70,11 +70,21 @@ export class UtilService {
   }
 
   setHitCellInOppositeCellList(index: number, documentId: string, username: string, oppositeCellList: SelectedCell[]){
+    var isPresent = false;
+
     oppositeCellList.forEach(oppositeCell=>{
+      if(isPresent){
+        return
+      }
       if(!oppositeCell.hit && oppositeCell.index==index){
         oppositeCell.hit=true;
-      }
+        isPresent=true;
+      }      
     })
+
+    if(!isPresent){
+        oppositeCellList.push({index: index, type: 999, hit:true})
+    }
 
     this.fs.insertCellList(documentId,username,oppositeCellList)
   }
