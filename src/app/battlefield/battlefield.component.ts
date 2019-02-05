@@ -94,6 +94,9 @@ export class BattlefieldComponent implements OnInit {
     this.checkMatchStatus();
 
     this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
+      docList[0].payload.doc.ref.parent.parent.get().then(d=>{
+        console.log(d.data())
+      })
       var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
       var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
       if(myDoc){

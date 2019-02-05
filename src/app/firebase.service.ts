@@ -32,7 +32,7 @@ export class FirebaseService {
 
    if(documentID==null){
       documentID = date.getTime().toString();
-      this.cellCollection.doc(documentID).set({date: date, player: [username, null], status: "init"})
+      this.cellCollection.doc(documentID).set({date: date, player: [username, null], status: "init", onTurn:null})
       this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username})
    }
    else {
@@ -42,7 +42,7 @@ export class FirebaseService {
         var player1Username = data.data().player[0];
         var playerArray = [player1Username,username];
 
-        this.cellCollection.doc(documentID).set({date: matchDate, player: playerArray, status: "ready"});
+        this.cellCollection.doc(documentID).set({date: matchDate, player: playerArray, status: "ready", onTurn:player1Username});
         this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username});
       })
    }    
