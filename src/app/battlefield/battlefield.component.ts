@@ -96,12 +96,13 @@ export class BattlefieldComponent implements OnInit {
     this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
       var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
       var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
-      if(myDoc!=undefined){
+      if(myDoc){
         this.selectedCellList = myDoc.payload.doc.data().cellList;
       }
-      this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
-      this.oppositeUsername = oppositeDoc.payload.doc.data().username;
-      console.log(this.oppositeCellList)
+      if(oppositeDoc){
+        this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
+        this.oppositeUsername = oppositeDoc.payload.doc.data().username
+      }
       //console.log(docList)
       //this.selectedCellList = docList.payload.data().cellList;
     })
@@ -110,7 +111,6 @@ export class BattlefieldComponent implements OnInit {
 
   insertCellListOnFirebase(){
     this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
-    this.matchLog.push("Match " + this.documentId + " INIT");
   }
 
   //private
@@ -184,10 +184,9 @@ export class BattlefieldComponent implements OnInit {
     }
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
     this.matchReady = matchById.payload.doc.data().status=="ready";
-    if(this.matchReady){
       this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status)
       this.matchLog.push(" player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1])
-    }
+
   }
 
   private searchMatch(){
