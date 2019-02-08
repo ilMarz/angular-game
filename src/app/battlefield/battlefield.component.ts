@@ -41,6 +41,7 @@ export class BattlefieldComponent implements OnInit {
   username = this.credentialMap.username;
   oppositeUsername = null;
   documentId: string = null;
+  onTurn: string;
 
   constructor(private utilService: UtilService, 
     private firebaseService: FirebaseService,
@@ -77,6 +78,9 @@ export class BattlefieldComponent implements OnInit {
   }
 
   launchAttack(index: number){
+    if(this.onTurn!=this.username){
+      return
+    }
     this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.oppositeUsername,this.oppositeCellList);
   }
 
@@ -96,16 +100,17 @@ export class BattlefieldComponent implements OnInit {
     this.cellCollection.doc(documentId).collection("players").snapshotChanges().forEach(docList=>{
       docList[0].payload.doc.ref.parent.parent.get().then(d=>{
         console.log(d.data())
+        this.onTurn = d.data().onTurn;
+        var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
+        var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
+        if(myDoc){
+          this.selectedCellList = myDoc.payload.doc.data().cellList;
+        }
+        if(oppositeDoc){
+          this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
+          this.oppositeUsername = oppositeDoc.payload.doc.data().username
+        }
       })
-      var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
-      var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
-      if(myDoc){
-        this.selectedCellList = myDoc.payload.doc.data().cellList;
-      }
-      if(oppositeDoc){
-        this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
-        this.oppositeUsername = oppositeDoc.payload.doc.data().username
-      }
       //console.log(docList)
       //this.selectedCellList = docList.payload.data().cellList;
     })
@@ -188,7 +193,7 @@ export class BattlefieldComponent implements OnInit {
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
     this.matchReady = matchById.payload.doc.data().status=="ready";
       this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status)
-      this.matchLog.push(" player1: " + matchById.payload.doc.data().player[0] + " -- player2: " + matchById.payload.doc.data().player[1])
+      //this.matchLog.push(" player1: " + matchById.payload.doc.data().usernames.player1 + " -- player2: " + matchById.payload.doc.username.player2)
 
   }
 

@@ -26,24 +26,31 @@ export class FirebaseService {
 
 
   //public methods
-  insertCellList(documentID: string, username: string, cellList: SelectedCell[]){
-   var player = 1;
-   var date = new Date();
+  insertCellList(documentID: string, oppositeUsername: string, cellList: SelectedCell[]){
 
-   if(documentID==null){
-      documentID = date.getTime().toString();
-      this.cellCollection.doc(documentID).set({date: date, player: [username, null], status: "init", onTurn:null})
-      this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username})
+   if(this.isNewMatch(documentID)){
+      var returnedDocumentID = this.insertCellListInNewMatch(documentID,oppositeUsername,cellList)
+      return returnedDocumentID
    }
    else {
-      player = 2;
+     var oppositePlayer = 1;
       this.cellCollection.doc(documentID).ref.get().then(data=>{
         var matchDate = data.data().date;
-        var player1Username = data.data().player[0];
-        var playerArray = [player1Username,username];
-
-        this.cellCollection.doc(documentID).set({date: matchDate, player: playerArray, status: "ready", onTurn:player1Username});
-        this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: player, username: username});
+        var player1Username = data.data().usernames.player1;
+        var player2Username = data.data().usernames.player2;
+        if(!player2Username && oppositeUsername!=player1Username){
+          player2Username=oppositeUsername;
+        }
+        var playerOnTurn = null;
+        if(oppositeUsername==player1Username){
+          playerOnTurn=player1Username
+        }
+        else {
+          playerOnTurn=player2Username
+          oppositePlayer=2
+        }
+        this.cellCollection.doc(documentID).set({date: matchDate, usernames: {player1: player1Username, player2: oppositeUsername}, status: "ready", onTurn:playerOnTurn});
+        this.cellCollection.doc(documentID).collection("players").doc(oppositeUsername).set({cellList: cellList, player: oppositePlayer, username: oppositeUsername});
       })
    }    
    return documentID;  
@@ -89,6 +96,17 @@ export class FirebaseService {
   }
 
   //private methods  
+  private insertCellListInNewMatch(documentID: string, username: string, cellList: SelectedCell[]){
+    var date = new Date();
+    documentID = date.getTime().toString();
+    this.cellCollection.doc(documentID).set({date: date, usernames: {player1: username, player2: null}, status: "init", onTurn:null})
+    this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: 1, username: username})
+    return documentID
+   }
+
+   private isNewMatch(documentID: string){
+     return documentID==null
+   }
 
  /* subscribeToListener(listener: Observable<DocumentData[]>){
     listener.subscribe((q)=>{

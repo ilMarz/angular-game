@@ -69,7 +69,7 @@ export class UtilService {
     return this.colNumber;
   }
 
-  setHitCellInOppositeCellList(index: number, documentId: string, username: string, oppositeCellList: SelectedCell[]){
+  setHitCellInOppositeCellList(index: number, documentId: string, oppositeUsername: string, oppositeCellList: SelectedCell[]){
     var isPresent = false;
 
     oppositeCellList.forEach(oppositeCell=>{
@@ -86,7 +86,7 @@ export class UtilService {
         oppositeCellList.push({index: index, type: 999, hit:true})
     }
 
-    this.fs.insertCellList(documentId,username,oppositeCellList)
+    this.fs.insertCellList(documentId,oppositeUsername,oppositeCellList)
   }
 
   getHitCellType(index: number, type: number, oppositeCellList: SelectedCell[]){

@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 export class AppComponent {
   title = 'Angular Game';
   showLogout = false;
+  username: string;
 
   constructor(private fs: FirebaseService, private router: Router, private authService: AuthService){}
 
@@ -24,6 +25,7 @@ export class AppComponent {
     }
     let username = credentialMapFromLocalStorage.username;
     let password = credentialMapFromLocalStorage.password;
+    this.username = username;
 
     this.authService.login(username,password).then(data =>{
       this.showLogout = true;
