@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { UtilService, SelectedCell, Item, Neighbor } from '../util.service';
+import { AngularFirestoreCollection } from '@angular/fire/firestore';
+import { UtilService, SelectedCell, Item } from '../util.service';
 import { FirebaseService } from '../firebase.service';
 import { AuthService} from '../auth.service';
+import {MatDialog} from '@angular/material';
+import {MatchDialogComponent} from '../match-dialog/match-dialog.component';
 
 @Component({
   selector: 'app-battlefield',
@@ -41,10 +42,13 @@ export class BattlefieldComponent implements OnInit {
   oppositeUsername = null;
   documentId: string = null;
   onTurn: string;
+  matchStatus: string;
+  winner: string;
 
   constructor(private utilService: UtilService, 
     private firebaseService: FirebaseService,
-    private authService : AuthService) {
+    private authService : AuthService,
+    private dialog: MatDialog) {
     this.cellCollection = firebaseService.getCellCollection();
     //this.cellCollectionObs = this.cellCollection.valueChanges();
    }
@@ -126,6 +130,17 @@ export class BattlefieldComponent implements OnInit {
     this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(MatchDialogComponent, {
+      width: '250px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
   //private
   private isItemComplete(){
     return this.item.neighborList.length>=this.selectedType;
@@ -196,7 +211,8 @@ export class BattlefieldComponent implements OnInit {
       return
     }
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
-    this.matchReady = matchById.payload.doc.data().status=="ready";
+    this.matchStatus = matchById.payload.doc.data().status;
+    this.matchReady = this.matchStatus=="ready";
       this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status)
       //this.matchLog.push(" player1: " + matchById.payload.doc.data().usernames.player1 + " -- player2: " + matchById.payload.doc.username.player2)
 
@@ -213,6 +229,20 @@ export class BattlefieldComponent implements OnInit {
   private isOppositeTurn(){
    return this.onTurn!=undefined && this.username!=undefined && this.onTurn!=this.username
    
+  }
+
+  private isMatchOver(){
+    var hitSelectedCellList = this.selectedCellList.filter(cell=>cell.hit && cell.type!=999);
+    if(hitSelectedCellList.length>=21){
+      this.winner = this.username;
+      //user 1 wins
+      this.utilService.endMatch(this.documentId)
+    }
+    var hitOppositeCellList = this.oppositeCellList
+    if(hitOppositeCellList.length>=21){
+      //user 2 wins
+      this.winner = this.oppositeUsername;
+    }
   }
 
   //FIREBASE

@@ -10,7 +10,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 import { FormsModule } from '@angular/forms';
@@ -20,6 +19,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatCardModule} from '@angular/material/card';
 import { SearchPipe } from './_pipe/search.pipe';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
+import { MatchDialogComponent } from './match-dialog/match-dialog.component';
+import { MatDialogModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { NgxUiLoaderModule } from  'ngx-ui-loader';
     BattlefieldComponent,
     HomeComponent,
     LoginComponent,
-    SearchPipe
+    SearchPipe,
+    MatchDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -42,10 +44,12 @@ import { NgxUiLoaderModule } from  'ngx-ui-loader';
     MatInputModule,
     MatListModule,
     MatCardModule,
-    NgxUiLoaderModule
+    NgxUiLoaderModule,
+    MatDialogModule
     
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [MatchDialogComponent],
 })
 export class AppModule { }

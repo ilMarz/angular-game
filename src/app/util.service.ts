@@ -124,6 +124,11 @@ export class UtilService {
     this.ngxLoader.stopLoader('loader-01')
   }
 
+  endMatch(documentID: string){
+
+    this.fs.endMatch(documentID)
+   }
+
   //private
 
   private checkIfCellIsHit(index: number, cellList: SelectedCell[], isOpponentField: boolean){

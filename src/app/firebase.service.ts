@@ -81,6 +81,11 @@ export class FirebaseService {
     return documentID;  
    }
 
+   endMatch(documentID: string){
+
+    this.cellCollection.doc(documentID).delete();  
+   }
+
   getCellListByUsername(docId: string, username: string) {
     var docPath = docId+"/players/"+username;
 
