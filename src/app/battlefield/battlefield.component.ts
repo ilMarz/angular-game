@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { UtilService, SelectedCell, Item, Neighbor } from '../util.service';
 import { FirebaseService } from '../firebase.service';
 import { AuthService} from '../auth.service';
-import { firestore } from 'firebase';
 
 @Component({
   selector: 'app-battlefield',
@@ -78,7 +77,7 @@ export class BattlefieldComponent implements OnInit {
   }
 
   launchAttack(index: number){
-    if(this.onTurn!=this.username){
+    if(this.isOppositeTurn()){
       return
     }
     this.utilService.setHitCellInOppositeCellList(index,this.documentId,this.oppositeUsername,this.oppositeCellList);
@@ -101,6 +100,12 @@ export class BattlefieldComponent implements OnInit {
       docList[0].payload.doc.ref.parent.parent.get().then(d=>{
         console.log(d.data())
         this.onTurn = d.data().onTurn;
+        if(this.isOppositeTurn()){
+          this.utilService.toggleLoader(true)
+        }
+        else {
+          this.utilService.toggleLoader(false)
+        }
         var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
         var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
         if(myDoc){
@@ -204,6 +209,11 @@ export class BattlefieldComponent implements OnInit {
       this.checkMatchStatus();
     })
   } 
+
+  private isOppositeTurn(){
+   return this.onTurn!=undefined && this.username!=undefined && this.onTurn!=this.username
+   
+  }
 
   //FIREBASE
     /*

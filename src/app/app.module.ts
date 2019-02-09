@@ -19,6 +19,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatCardModule} from '@angular/material/card';
 import { SearchPipe } from './_pipe/search.pipe';
+import { NgxUiLoaderModule } from  'ngx-ui-loader';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { SearchPipe } from './_pipe/search.pipe';
     FormsModule,
     MatInputModule,
     MatListModule,
-    MatCardModule
+    MatCardModule,
+    NgxUiLoaderModule
     
   ],
   providers: [],

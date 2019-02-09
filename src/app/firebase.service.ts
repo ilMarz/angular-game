@@ -26,35 +26,60 @@ export class FirebaseService {
 
 
   //public methods
-  insertCellList(documentID: string, oppositeUsername: string, cellList: SelectedCell[]){
+  updateOppositeCellListAfterAttack(documentID: string, oppositeUsername: string, cellList: SelectedCell[], changeTurn: boolean){
 
-   if(this.isNewMatch(documentID)){
-      var returnedDocumentID = this.insertCellListInNewMatch(documentID,oppositeUsername,cellList)
-      return returnedDocumentID
-   }
-   else {
      var oppositePlayer = 1;
       this.cellCollection.doc(documentID).ref.get().then(data=>{
         var matchDate = data.data().date;
         var player1Username = data.data().usernames.player1;
         var player2Username = data.data().usernames.player2;
-        if(!player2Username && oppositeUsername!=player1Username){
-          player2Username=oppositeUsername;
+        var playerOnTurn = data.data().onTurn;
+        
+        if(changeTurn){
+          if(oppositeUsername==player1Username){
+            playerOnTurn=player1Username
+          }
+          else {
+            playerOnTurn=player2Username
+            oppositePlayer=2
+          }
         }
-        var playerOnTurn = null;
-        if(oppositeUsername==player1Username){
-          playerOnTurn=player1Username
-        }
-        else {
-          playerOnTurn=player2Username
-          oppositePlayer=2
-        }
-        this.cellCollection.doc(documentID).set({date: matchDate, usernames: {player1: player1Username, player2: oppositeUsername}, status: "ready", onTurn:playerOnTurn});
+
+        this.cellCollection.doc(documentID).set({date: matchDate, usernames: {player1: player1Username, player2: player2Username}, status: "ready", onTurn:playerOnTurn});
         this.cellCollection.doc(documentID).collection("players").doc(oppositeUsername).set({cellList: cellList, player: oppositePlayer, username: oppositeUsername});
       })
-   }    
+   
    return documentID;  
   }
+
+  insertCellList(documentID: string, username: string, cellList: SelectedCell[]){
+
+    if(this.isNewMatch(documentID)){
+       var returnedDocumentID = this.insertCellListInNewMatch(documentID,username,cellList)
+       return returnedDocumentID
+    }
+    else {
+      var oppositePlayer = 1;
+       this.cellCollection.doc(documentID).ref.get().then(data=>{
+         var matchDate = data.data().date;
+         var player1Username = data.data().usernames.player1;
+         var player2Username = data.data().usernames.player2;
+         var playerOnTurn = data.data().onTurn;
+
+         if(username!=player1Username){
+           player2Username=username;
+         }
+         else {return}
+         
+         playerOnTurn=player1Username
+         oppositePlayer=2
+ 
+         this.cellCollection.doc(documentID).set({date: matchDate, usernames: {player1: player1Username, player2: username}, status: "ready", onTurn:playerOnTurn});
+         this.cellCollection.doc(documentID).collection("players").doc(username).set({cellList: cellList, player: oppositePlayer, username: username});
+       })
+    }    
+    return documentID;  
+   }
 
   getCellListByUsername(docId: string, username: string) {
     var docPath = docId+"/players/"+username;

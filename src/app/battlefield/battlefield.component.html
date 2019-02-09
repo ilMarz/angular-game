@@ -4,7 +4,7 @@
         <mat-card class="match-list">
             <mat-card-header>
                 <mat-card-title>MATCH</mat-card-title>
-                <mat-card-subtitle *ngIf="!isExistingMatch || !matchReady"><input [(ngModel)]="matchId" matInput placeholder="find..."></mat-card-subtitle>
+                <mat-card-subtitle *ngIf="!matchReady"><input [(ngModel)]="matchId" matInput placeholder="find..."></mat-card-subtitle>
             </mat-card-header>
             <mat-card-content [style.overflow]="'auto'"  [style.height.px]="'400'">
                     <mat-action-list>
@@ -29,17 +29,18 @@
                     <li *ngFor="let msg of matchLog" style="color: green">status: {{msg}}</li>
                 </ul>
             </mat-card-content>
-		</mat-card>
-        
+		</mat-card>        
     </div>
 
-  <div class="col-md-5">
-    <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
-        <mat-grid-tile  *ngFor="let num of range; let i = index" 
-        (click)="launchAttack(i)"
-        [ngClass]="checkIfCellIsHitOnEnemyField(i)"
-        ></mat-grid-tile>
-    </mat-grid-list>
+  <div class="col-md-5" style="position: relative">
+        <mat-grid-list cols={{colNumber}} rowHeight="1:1" *ngIf="matchReady">
+            <ngx-ui-loader [loaderId]="'loader-01'">
+            </ngx-ui-loader>
+            <mat-grid-tile  *ngFor="let num of range; let i = index" 
+            (click)="launchAttack(i)"
+            [ngClass]="checkIfCellIsHitOnEnemyField(i)"
+            ></mat-grid-tile>
+        </mat-grid-list>
   </div>
   <div class="col-md-7 item-selector">
       <div class="container" *ngIf="!matchReady">

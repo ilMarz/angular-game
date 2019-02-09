@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {FirebaseService} from './firebase.service';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 
 export interface SelectedCell { 
@@ -22,7 +23,9 @@ export interface Neighbor {
 })
 export class UtilService {
 
-  constructor(private fs: FirebaseService) { }
+  constructor(private fs: FirebaseService,
+    private ngxLoader : NgxUiLoaderService) {
+   }
 
   private colNumber = 11;
 
@@ -86,7 +89,7 @@ export class UtilService {
         oppositeCellList.push({index: index, type: 999, hit:true})
     }
 
-    this.fs.insertCellList(documentId,oppositeUsername,oppositeCellList)
+    this.fs.updateOppositeCellListAfterAttack(documentId,oppositeUsername,oppositeCellList, !isPresent)
   }
 
   getHitCellType(index: number, type: number, oppositeCellList: SelectedCell[]){
@@ -100,6 +103,14 @@ export class UtilService {
 
   checkIfCellIsHitOnField(index: number, cellList: SelectedCell[]){
     return this.checkIfCellIsHit(index, cellList,false) 
+  }
+
+  toggleLoader(show: boolean){
+    if(show){
+      this.ngxLoader.startLoader('loader-01')
+      return
+    }
+    this.ngxLoader.stopLoader('loader-01')
   }
 
   //private
