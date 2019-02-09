@@ -74,16 +74,27 @@ export class UtilService {
 
   setHitCellInOppositeCellList(index: number, documentId: string, oppositeUsername: string, oppositeCellList: SelectedCell[]){
     var isPresent = false;
+    var isAlreadyHit = false;
 
     oppositeCellList.forEach(oppositeCell=>{
       if(isPresent){
         return
       }
-      if(!oppositeCell.hit && oppositeCell.index==index){
-        oppositeCell.hit=true;
-        isPresent=true;
+      if(oppositeCell.index==index){
+        if(!oppositeCell.hit){
+          oppositeCell.hit=true;
+          isPresent=true;
+        }
+        else {
+          isAlreadyHit = true
+          return
+        }
       }      
     })
+
+    if(isAlreadyHit){
+      return
+    }
 
     if(!isPresent){
         oppositeCellList.push({index: index, type: 999, hit:true})
