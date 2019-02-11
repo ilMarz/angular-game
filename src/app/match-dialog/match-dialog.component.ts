@@ -10,7 +10,7 @@ export class MatchDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<MatchDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {}) {}
+    @Inject(MAT_DIALOG_DATA) public data: {username: string}) {}
 
   onNoClick(): void {
     this.dialogRef.close();

@@ -117,11 +117,16 @@ export class UtilService {
   }
 
   toggleLoader(show: boolean){
-    if(show){
-      this.ngxLoader.startLoader('loader-01')
-      return
+    try{
+      if(show){
+        this.ngxLoader.startLoader('loader-01')
+        return
+      }
+      this.ngxLoader.stopLoader('loader-01')
     }
-    this.ngxLoader.stopLoader('loader-01')
+    catch(e) {
+      console.log("NO LOADER", e)
+    }
   }
 
   endMatch(documentID: string){

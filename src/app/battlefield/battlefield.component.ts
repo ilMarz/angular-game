@@ -5,6 +5,7 @@ import { FirebaseService } from '../firebase.service';
 import { AuthService} from '../auth.service';
 import {MatDialog} from '@angular/material';
 import {MatchDialogComponent} from '../match-dialog/match-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-battlefield',
@@ -48,7 +49,8 @@ export class BattlefieldComponent implements OnInit {
   constructor(private utilService: UtilService, 
     private firebaseService: FirebaseService,
     private authService : AuthService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private router: Router) {
     this.cellCollection = firebaseService.getCellCollection();
     //this.cellCollectionObs = this.cellCollection.valueChanges();
    }
@@ -104,12 +106,6 @@ export class BattlefieldComponent implements OnInit {
       docList[0].payload.doc.ref.parent.parent.get().then(d=>{
         console.log(d.data())
         this.onTurn = d.data().onTurn;
-        if(this.isOppositeTurn()){
-          this.utilService.toggleLoader(true)
-        }
-        else {
-          this.utilService.toggleLoader(false)
-        }
         var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
         var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
         if(myDoc){
@@ -119,6 +115,15 @@ export class BattlefieldComponent implements OnInit {
           this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
           this.oppositeUsername = oppositeDoc.payload.doc.data().username
         }
+        if(this.matchReady){
+          if(this.isOppositeTurn()){
+            this.utilService.toggleLoader(true)
+          }
+          else {
+            this.utilService.toggleLoader(false)
+          }
+        }
+        this.isMatchOver();
       })
       //console.log(docList)
       //this.selectedCellList = docList.payload.data().cellList;
@@ -128,17 +133,6 @@ export class BattlefieldComponent implements OnInit {
 
   insertCellListOnFirebase(){
     this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
-  }
-
-  openDialog(): void {
-    const dialogRef = this.dialog.open(MatchDialogComponent, {
-      width: '250px',
-      data: {}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
   }
 
   //private
@@ -211,6 +205,9 @@ export class BattlefieldComponent implements OnInit {
       return
     }
     var matchById = this.openedMatchList.find(m=> {return m.payload.doc.id==this.documentId});
+    if(matchById==undefined){
+      return
+    }
     this.matchStatus = matchById.payload.doc.data().status;
     this.matchReady = this.matchStatus=="ready";
       this.matchLog.push("match " + this.documentId + " " + matchById.payload.doc.data().status)
@@ -233,16 +230,34 @@ export class BattlefieldComponent implements OnInit {
 
   private isMatchOver(){
     var hitSelectedCellList = this.selectedCellList.filter(cell=>cell.hit && cell.type!=999);
-    if(hitSelectedCellList.length>=21){
+    var isUserWinner = hitSelectedCellList.length>=21;
+    if(isUserWinner){
       this.winner = this.username;
-      //user 1 wins
-      this.utilService.endMatch(this.documentId)
     }
-    var hitOppositeCellList = this.oppositeCellList
-    if(hitOppositeCellList.length>=21){
-      //user 2 wins
+    var hitOppositeCellList = this.oppositeCellList.filter(cell=>cell.hit && cell.type!=999);
+    var isOppositeUserWinnder = hitOppositeCellList.length>=21
+    if(isOppositeUserWinnder){
       this.winner = this.oppositeUsername;
     }
+
+    if(isUserWinner || isOppositeUserWinnder){
+      this.utilService.endMatch(this.documentId)
+      this.openDialog()
+    }
+  }
+
+  private openDialog(): void {
+    const dialogRef = this.dialog.open(MatchDialogComponent, {
+      width: '250px',
+      data: {
+        username: this.winner
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.router.navigate(['/play']);
+    });
   }
 
   //FIREBASE
