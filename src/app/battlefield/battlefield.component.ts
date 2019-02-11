@@ -259,12 +259,4 @@ export class BattlefieldComponent implements OnInit {
       this.router.navigate(['/play']);
     });
   }
-
-  //FIREBASE
-    /*
-    use valueChanges() to get data and snapshotChanges() whenever you might need metadata, eg. deleting or updating document.
-    
-    this.cellCollectionObs.forEach(e=>{
-    console.log(e)
-  })*/
 }
