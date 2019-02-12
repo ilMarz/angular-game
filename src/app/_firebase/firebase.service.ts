@@ -105,7 +105,7 @@ export class FirebaseService {
     return new Promise<Object>(resolve => {
 
       this.credential.ref.where("credentialList", "array-contains", {username: username, password: password}).get().then(data=>{
-        resolve(!data.empty)
+        resolve(data.empty)
       })
     });
   } 
@@ -114,9 +114,8 @@ export class FirebaseService {
     return new Promise<Object>(resolve => {
 
       this.credential.doc("credentials").ref.get().then(data=>{
-        console.log(data.data())
-        var credentialList = data.data().credentialList;
-        var obj = {credentialList: []};
+        var obj = {credentialList: [{username: null, password: null}]};
+        var credentialList = data.data() ? data.data().credentialList : [{username: null, password: null}];
         credentialList.push({username: username, password: password});
         obj.credentialList = credentialList;
         this.credential.doc("credentials").set(obj);

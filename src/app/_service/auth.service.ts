@@ -25,21 +25,21 @@ export class AuthService {
 
   create(username: string, password: string){
 
-    return new Promise<Object>((resolve, reject) => {
-      this.fs.checkCredential(username,password).then(userExists=>{
-          if(!userExists){
+    return new Promise<{username: string, password: string}>((resolve, reject) => {
+      this.fs.checkCredential(username,password).then(userNotExists=>{
+          if(userNotExists){
             this.fs.insertUser(username,password).then(()=>{
               var token = btoa(username + "::" + password);
-              this.isUserLogged = true;
-              localStorage.setItem("token", token);
-              resolve();
+              resolve({username: username, password: password});
 
             }).catch(error=>{
               console.log("error create user", error)
               reject();
             })
           }
-          reject();
+          else {
+            resolve({username: null, password: null});
+          }
       })
     })
   }

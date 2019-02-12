@@ -1,14 +1,42 @@
 <div class="container">
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-              <mat-form-field class="example-full-width">
-                <input matInput [(ngModel)]="username" placeholder="Username">
-              </mat-form-field><br>
-              <mat-form-field class="example-full-width">
-                <input matInput type="password" [(ngModel)]="password" placeholder="Password">
-              </mat-form-field> <br>              
-              <button mat-raised-button color="primary" (click)="checkCredential()">Login</button>
-              <button mat-raised-button color="link" (click)="createUser()" >Register</button>
+        <div class="col-md-6">
+            <mat-tab-group>
+                <mat-tab label="Login"> 
+                    <mat-form-field class="example-full-width">
+                        <input matInput [(ngModel)]="username" placeholder="Username">
+                      </mat-form-field><br>
+                      <mat-form-field class="example-full-width">
+                        <input matInput type="password" [(ngModel)]="password" placeholder="Password">
+                      </mat-form-field> <br>              
+                      <button mat-raised-button color="primary" (click)="checkCredential()">Login</button>
+                </mat-tab>
+                <mat-tab label="Sign up"> 
+                    <mat-form-field class="example-full-width">
+                        <input matInput [(ngModel)]="registerUsername" placeholder="Username">
+                    </mat-form-field><br>
+                    <mat-form-field class="example-full-width">
+                        <input matInput type="password" [(ngModel)]="registerPassword" placeholder="Password">
+                    </mat-form-field> <br>       
+                    <mat-form-field class="example-full-width">
+                         <input matInput type="password" [(ngModel)]="passwordConfirm" placeholder="Confirm Password">
+                    </mat-form-field> <br>       
+                      <button mat-raised-button color="link" (click)="createUser()" >Register</button> 
+                      <div *ngIf="showCard">
+                          <mat-card class="user-card" [ngClass]="isUserRegistered ? 'user-success':'user-error'">
+                              <mat-card-title>
+                                {{registerMessage}}
+                              </mat-card-title>
+                              <mat-card-content>
+                                <div *ngIf="isUserRegistered">
+                                    <span>Username: {{registeredUsername}}</span><br>
+                                    <span>Password: {{registeredPassword}}</span>
+                                </div>
+                              </mat-card-content>
+                            </mat-card>
+                      </div>
+                </mat-tab>
+            </mat-tab-group>              
           </div>
         </div>
 </div>
