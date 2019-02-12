@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FirebaseService } from './firebase.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { reject } from 'q';
 
 @Injectable({
