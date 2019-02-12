@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, DocumentData, DocumentSnapshot } from '@angular/fire/firestore';
-import {SelectedCell} from '../service/util.service'
+import {SelectedCell} from '../_service/util.service'
 
 export interface credentialListFirebaseInterface { 
   credentialList: Object[]

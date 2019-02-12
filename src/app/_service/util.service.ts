@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {FirebaseService} from '../firebase/firebase.service';
+import {FirebaseService} from '../_firebase/firebase.service';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 

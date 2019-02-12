@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AngularFirestoreCollection } from '@angular/fire/firestore';
-import { UtilService, SelectedCell, Item } from '../service/util.service';
-import { FirebaseService } from '../firebase/firebase.service';
-import { AuthService} from '../service/auth.service';
+import { UtilService, SelectedCell, Item } from '../_service/util.service';
+import { FirebaseService } from '../_firebase/firebase.service';
+import { AuthService} from '../_service/auth.service';
 import {MatDialog} from '@angular/material';
 import {MatchDialogComponent} from '../match-dialog/match-dialog.component';
 import { Router } from '@angular/router';

@@ -21,6 +21,7 @@ import { SearchPipe } from './_pipe/search.pipe';
 import { NgxUiLoaderModule } from  'ngx-ui-loader';
 import { MatchDialogComponent } from './match-dialog/match-dialog.component';
 import { MatDialogModule } from '@angular/material';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { MatDialogModule } from '@angular/material';
     MatListModule,
     MatCardModule,
     NgxUiLoaderModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTabsModule
     
   ],
   providers: [],
