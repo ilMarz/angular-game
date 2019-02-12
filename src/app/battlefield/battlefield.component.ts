@@ -233,17 +233,17 @@ export class BattlefieldComponent implements OnInit {
     var isUserWinner = hitSelectedCellList.length>=21;
     if(isUserWinner){
       this.winner = this.username;
-    }
-    var hitOppositeCellList = this.oppositeCellList.filter(cell=>cell.hit && cell.type!=999);
-    var isOppositeUserWinnder = hitOppositeCellList.length>=21
-    if(isOppositeUserWinnder){
-      this.winner = this.oppositeUsername;
-    }
-
-    if(isUserWinner || isOppositeUserWinnder){
       this.utilService.endMatch(this.documentId)
       this.openDialog()
     }
+    var hitOppositeCellList = this.oppositeCellList.filter(cell=>cell.hit && cell.type!=999);
+    var isOppositeUserWinner = hitOppositeCellList.length>=21
+    if(isOppositeUserWinner){
+      this.winner = this.oppositeUsername;
+      this.utilService.endMatch(this.documentId)
+      this.openDialog()
+    }
+
   }
 
   private openDialog(): void {
