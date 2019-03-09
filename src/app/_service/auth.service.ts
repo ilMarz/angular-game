@@ -11,14 +11,15 @@ export class AuthService {
   isUserLogged: boolean = false;
 
   login(username: string, password: string){
-    return new Promise<Object>(resolve => {
+    return new Promise<Object>((resolve, reject) => {
       this.fs.checkCredential(username,password).then(userExists=>{
           if(userExists){
             var token = btoa(username + "::" + password);
             this.isUserLogged = true;
             localStorage.setItem("token", token);
+            resolve();
           }
-          resolve();
+          reject();
       })
     })
   }
@@ -26,14 +27,14 @@ export class AuthService {
   create(username: string, password: string){
 
     return new Promise<{username: string, password: string}>((resolve, reject) => {
-      this.fs.checkCredential(username,password).then(userNotExists=>{
-          if(userNotExists){
+      this.fs.checkIfUserAlreadyExists(username).then(userExists=>{
+          if(!userExists){
             this.fs.insertUser(username,password).then(()=>{
               var token = btoa(username + "::" + password);
               resolve({username: username, password: password});
 
             }).catch(error=>{
-              console.log("error create user", error)
+              console.log("error create user: ", error)
               reject();
             })
           }

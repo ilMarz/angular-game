@@ -105,6 +105,16 @@ export class FirebaseService {
     return new Promise<Object>(resolve => {
 
       this.credential.ref.where("credentialList", "array-contains", {username: username, password: password}).get().then(data=>{
+        resolve(!data.empty)
+      })
+    });
+  } 
+
+  checkIfUserAlreadyExists(username: string) {
+
+    return new Promise<Object>(resolve => {
+
+      this.credential.ref.where("credentialList", "array-contains", {username: username}).get().then(data=>{
         resolve(data.empty)
       })
     });
