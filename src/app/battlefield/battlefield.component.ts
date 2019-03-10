@@ -108,12 +108,12 @@ export class BattlefieldComponent implements OnInit {
         this.onTurn = d.data().onTurn;
         var myDoc = docList.find(doc=> doc.payload.doc.data().username==this.username);
         var oppositeDoc = docList.find(doc=> doc.payload.doc.data().username!=this.username);
-        if(myDoc){
-          this.selectedCellList = myDoc.payload.doc.data().cellList;
-        }
+
+        this.selectedCellList = myDoc ? myDoc.payload.doc.data().cellList : [];
+
         if(oppositeDoc){
           this.oppositeCellList = oppositeDoc.payload.doc.data().cellList;
-          this.oppositeUsername = oppositeDoc.payload.doc.data().username
+          this.oppositeUsername = oppositeDoc.payload.doc.data().username;
         }
         if(this.matchReady){
           if(this.isOppositeTurn()){
@@ -133,6 +133,10 @@ export class BattlefieldComponent implements OnInit {
 
   insertCellListOnFirebase(){
     this.documentId = this.firebaseService.insertCellList(this.documentId, this.username, this.selectedCellList);
+  }
+
+  getButtonStyle(item: number){
+    return "type"+item + (this.selectedType===item ? " selectedItem" : "");
   }
 
   //private

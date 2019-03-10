@@ -13,7 +13,17 @@
             </mat-card-content>
 		</mat-card>
     </div>
-    <div class="grid-container" class="col-md-5">    
+    <div class="grid-container" class="col-md-5">   
+            <div class="item-selector" *ngIf="!matchReady">
+                    <div class="container" >
+                      <div class="row space-between">
+                          <button *ngFor="let item of [1,2,3,4,5,6]" 
+                          mat-raised-button [ngClass]="getButtonStyle(item)" (click)="setType(item)" [disabled]="isDisabled(item)">{{item}}</button>
+                      </div>
+                    </div>
+                    <span *ngIf="completed && !isConfirmed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
+                </div>        
+
         <mat-grid-list cols={{colNumber}} rowHeight="1:1" >
             <mat-grid-tile  *ngFor="let num of range; let i = index" 
             (click)="clickedCellHandler(i)" 
@@ -22,7 +32,7 @@
         </mat-grid-list>
         <mat-card class="match-list">
             <mat-card-header>
-                <mat-card-title>TURN: {{onTurn}}</mat-card-title>
+                <mat-card-title>STATUS</mat-card-title>
             </mat-card-header>
             <mat-card-content style="background-color: black" [style.overflow]="'auto'"  [style.height.px]="'100'">
                 <ul>
@@ -42,15 +52,5 @@
             ></mat-grid-tile>
         </mat-grid-list>
   </div>
-  <div class="col-md-7 item-selector">
-      <div class="container" *ngIf="!matchReady">
-        <div class="row space-between">
-            <button *ngFor="let item of [1,2,3,4,5,6]" 
-            mat-raised-button color="primary" (click)="setType(item)" [disabled]="isDisabled(item)">{{item}}</button>
-        </div>
-      </div>
-      <span *ngIf="completed && !isConfirmed" (click)="confirm()"><button mat-raised-button color="primary">Confirm</button></span>
-  </div>
-  <div class="col-md-5"></div>
   </div>
 </div>

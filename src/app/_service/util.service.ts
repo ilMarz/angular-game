@@ -27,7 +27,7 @@ export class UtilService {
     private ngxLoader : NgxUiLoaderService) {
    }
 
-  private colNumber = 11;
+  private colNumber = 7;
 
   private indexOffset = this.colNumber;
   private cellNumber = this.colNumber*this.colNumber;

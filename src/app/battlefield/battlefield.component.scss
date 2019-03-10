@@ -1,3 +1,12 @@
+$color-1:linear-gradient(#000000, #6c757d);
+$color-2:linear-gradient(#073500, #3fff00);
+$color-3:linear-gradient(#311010, #ff0000);
+$color-4:linear-gradient(#ff0000, #ffa363);
+$color-5:linear-gradient(#584f01, #fff700);
+$color-6:linear-gradient(#030a32, #007bff);
+$color-isHit:linear-gradient(to bottom right, white, #130000);
+
+
 mat-grid-tile {
     background: lightblue;
     cursor: pointer;
@@ -16,26 +25,53 @@ mat-grid-tile {
 }
 
 .type1selected{
-    background-image: linear-gradient(#000000, #6c757d);
+    background-image: $color-1;
 }
 .type2selected{
-    background-image: linear-gradient(#073500, #3fff00);
+    background-image: $color-2;
 }
 .type3selected{
-    background-image: linear-gradient(#311010, #ff0000);
+    background-image: $color-3;
 }
 .type4selected{
-    background-image: linear-gradient(#ff0000, #ffa363);
+    background-image: $color-4;
 }
 .type5selected{
-    background-image: linear-gradient(#584f01, #fff700);
+    background-image: $color-5;
 }
 .type6selected{
-    background-image: linear-gradient(#030a32, #007bff);
+    background-image: $color-6;
+}
+
+.type1{
+    background: $color-1;
+    color: white;
+}
+.type2{
+    background: $color-2;
+    color: white;
+}
+.type3{
+    background: $color-3;
+    color: white;
+}
+.type4{
+    background: $color-4;
+    color: white;
+}
+.type5{
+    background: $color-5;
+    color: white;
+}
+.type6{
+    background: $color-6;
+}
+.selectedItem {
+    border: 2px white solid;
 }
 
 .isHit{
-    background-image: linear-gradient(to bottom right, white, #130000);
+    background-image: $color-isHit;
 }
 
 .isMissed{
