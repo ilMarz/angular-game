@@ -27,7 +27,7 @@ export class AuthService {
 
     return new Promise<{username: string, password: string}>((resolve, reject) => {
       this.fs.checkIfUserAlreadyExists(username).then(userExists=>{
-          if(!userExists){
+          if(userExists){
             this.fs.insertUser(username,password).then(()=>{
               var token = btoa(username + "::" + password);
               resolve({username: username, password: password});
