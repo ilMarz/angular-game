@@ -39,15 +39,12 @@ export class UtilService {
   }
 
   isSelectedCellTooFarFromItem(index: number, item: Item){
-    if(item.neighborList.length==0){
-      return false;
-    }
-    var upCell = item.neighborList.find( c => c.up.index === index);
-    var downCell = item.neighborList.find( c => c.down.index === index);
-    var leftCell = item.neighborList.find( c => c.left.index === index);
-    var rightCell = item.neighborList.find( c => c.right.index === index);
 
-    if (upCell!=undefined || downCell!=undefined || leftCell!=undefined || rightCell!=undefined) {
+    if (item.neighborList.length==0 || 
+      this.findNeighborFromPosition(item, 'up', index) || 
+        this.findNeighborFromPosition(item, 'down', index) || 
+        this.findNeighborFromPosition(item, 'left', index) || 
+        this.findNeighborFromPosition(item, 'right', index)) {
       return false;      
     }
     console.log("too far!: "+index);
@@ -58,8 +55,8 @@ export class UtilService {
     var neighbor:Neighbor = {
       up: {index: index-this.indexOffset, isFree: true},
       down: {index: index+this.indexOffset, isFree: true},
-      left: {index: index-1, isFree: true},
-      right: {index: index + 1, isFree: true}
+      left: {index: this.isLeftBound(index) ? 999 : index-1, isFree: true},
+      right: {index: this.isRightBound(index) ? 999 : index + 1, isFree: true}
      }
      return neighbor;
   }
@@ -154,5 +151,17 @@ export class UtilService {
   
   private getCellByIndex(arrayToCheck: SelectedCell[], index:number){
     return arrayToCheck.find(cell => cell.index === index);
+  }
+
+  private findNeighborFromPosition(item: Item, pos: string, index: number){
+    return item.neighborList.find( c => c[pos] ? c[pos].index === index : false)!=undefined;
+  }
+
+  private isLeftBound(index: number){
+    return (index % this.colNumber) === 0;
+  }
+
+  private isRightBound(index: number){
+    return (index % this.colNumber) === this.colNumber - 1;
   }
 }
